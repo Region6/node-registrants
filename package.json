@@ -1,0 +1,16 @@
+{
+  "name": "node-registrants",
+  "version": "0.1.0",
+  "dependencies": {
+    "underscore": "latest",
+    "async": "latest",
+    "node-uuid": "latest",
+    "sequelize": "sequelize/sequelize",
+    "glob": "latest",
+    "mysql": "latest"
+  },
+  "devDependencies": {
+
+  },
+  "main": "index.js"
+}

@@ -8,6 +8,7 @@ var Registrants = require("./index"),
       "port": 3306
     });
 
+/**
 registrants.getAttendee(1, 'E', function(reg) {
     console.log(reg);
     var values = {
@@ -23,5 +24,8 @@ registrants.getAttendee(1, 'E', function(reg) {
         console.log(reg);
     });
 });
+**/
 
-
+registrants.getRange(1, 50, 'E', function(reg) {
+  console.log(reg);
+});

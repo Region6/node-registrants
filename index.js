@@ -19,7 +19,7 @@ Registrants = function(options)
 };
 
 Registrants.prototype.initialize = function(options) {
-  console.log(this.options);
+  //console.log(this.options);
   this.db.checkin = new Sequelize(
     this.options.database,
     this.options.username,
@@ -360,10 +360,10 @@ Registrants.prototype.getAttendee = function(regId, type, callback){
         callback(data);
       };
   if (type == "E") {
-    console.log("Get Exhibitor Attendee");
+    //console.log("Get Exhibitor Attendee");
     this.getExhibitorAttendee(regId, returnCb);
   } else {
-    console.log("Get General Attendee");
+    //console.log("Get General Attendee");
     this.getRegistrant(regId, returnCb);
   }
 };
@@ -713,7 +713,7 @@ Registrants.prototype.updateRegistrantValues = function(regId, values, callback)
 
   var updateSelf = ['confirmnum'],
       obj = this;
-  console.log(values);
+  //console.log(values);
   this.models.CheckinMemberFieldValues.destroy(
     {
       event_id: values.event_id,
@@ -782,7 +782,7 @@ Registrants.prototype.updateRegistrantValues = function(regId, values, callback)
 
 Registrants.prototype.updateExhibitorAttendee = function(regId, values, callback) {
   var obj = this;
-  console.log(values);
+  //console.log(values);
   this.models.CheckinExhibitorAttendees
   .find(regId)
   .success(function(attendee) {
@@ -792,6 +792,25 @@ Registrants.prototype.updateExhibitorAttendee = function(regId, values, callback
     ).success(function(attendee) {
       obj.getExhibitorAttendee(regId, callback);
     });
+  });
+};
+
+Registrants.prototype.getRange = function(beginId, endId, type, callback) {
+  var ids = Array.apply((beginId-1), Array(endId - beginId)).map(function (x, y) { return y + 1; }),
+      registrants = [],
+      obj = this,
+      getReg = function(item, cb) {
+        returnCb = function(registrant) {
+          if (!underscore.isEmpty(registrant)) {
+            registrants.push(registrant);
+          }
+          cb();
+        }
+        obj.getAttendee(item, type, returnCb);
+      };
+
+  async.each(ids, getReg, function(err){
+    callback(registrants);
   });
 };
 

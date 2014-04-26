@@ -441,6 +441,12 @@ Registrants.prototype.createRegistrantModel = function(attendee, cb) {
       });
     },
     function(attendee, callback){
+      obj.getRegistrantBadgeFields(attendee, function(badgeFields) {
+        attendee.badgeFields = badgeFields;
+        callback(null, attendee);
+      });
+    },
+    function(attendee, callback){
       obj.getEvent(attendee, function(event) {
         attendee.event = event;
         callback(null, attendee);
@@ -599,6 +605,25 @@ Registrants.prototype.getBillerFieldValues = function(attendee, cb) {
           cb(result);
       });
 
+    });
+  });
+};
+
+Registrants.prototype.getRegistrantBadgeFields = function(attendee, cb) {
+  this.models.CheckinEventFields.findAll({
+    where: {
+      badge_order: { gt: 0 },
+      event_id: attendee.eventId
+    },
+    order: [
+      ['badge_order', 'ASC'],
+    ]
+  }).success(function(results) {
+    async.reduce(results, [], function(fields, item, callback) {
+      fields.push(item.name);
+      callback(null, fields);
+    }, function(err, result){
+      cb(result);
     });
   });
 };

@@ -26,6 +26,6 @@ registrants.getAttendee(1, 'E', function(reg) {
 });
 **/
 
-registrants.getRange(1, 50, 'E', function(reg) {
+registrants.getRange(1, 50, 'S', function(reg) {
   console.log(reg);
 });

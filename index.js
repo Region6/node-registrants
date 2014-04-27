@@ -839,6 +839,136 @@ Registrants.prototype.getRange = function(beginId, endId, type, callback) {
   });
 };
 
+Registrants.prototype.searchAttendees = function(fields, search, page, limit, extra, callback) {
+  var sql = "",
+      obj = this,
+      fields = fields || [],
+      search = search || "all",
+      page = page || 0,
+      limit = limit || 20,
+      start = page * limit,
+      vars = [],
+      extra = extra || false,
+      registrants = [
+        {"total_entries": 0},
+        []
+      ];
+  async.waterfall([
+    function(cb) {
+      if (fields.length == 0) {
+        //console.log(page, start, limit);
+        sql = "SELECT t.* FROM ( ";
+        sql += "(SELECT group_members.id, 'G' as type, biller.register_date FROM group_members "+
+                "LEFT JOIN biller ON (group_members.groupUserId = biller.userID AND group_members.event_id = biller.eventId) "+
+                "WHERE biller.status != -1) ";
+        sql += "UNION ALL ";
+        sql += "(SELECT exhibitorAttendees.id, 'E' as type, biller.register_date FROM exhibitorAttendees "+
+                "LEFT JOIN biller ON (exhibitorAttendees.userId = biller.userID AND exhibitorAttendees.eventId = biller.eventId) "+
+                "WHERE biller.status != -1) ";
+        sql += ") AS  t";
+      } else if (underscore.indexOf(fields, "confirmation") !== -1) {
+        sql = "SELECT t.* FROM ( ";
+        sql += "(SELECT group_members.id, 'G' as type, biller.register_date "+
+                "FROM group_members "+
+                "LEFT JOIN biller ON (group_members.groupUserId = biller.userID AND group_members.event_id = biller.eventId) "+
+                "WHERE (group_members.confirmnum LIKE ? OR biller.confirmNum LIKE ?) AND biller.status != -1) ";
+        vars.push("%"+search+"%", "%"+search+"%");
+        sql += "UNION ALL ";
+        sql += "(SELECT exhibitorAttendees.id, 'E' as type, biller.register_date FROM exhibitorAttendees "+
+               "LEFT JOIN biller ON (exhibitorAttendees.userId = biller.userID AND exhibitorAttendees.eventId = biller.eventId) "+
+               "WHERE biller.status != -1 AND biller.confirmNum LIKE ?) ";
+        vars.push("%"+search+"%");
+        sql += ") AS  t";
+        console.log(sql);
+      } else if (underscore.indexOf(fields, "registrantid") !== -1) {
+        var type = search.charAt(0),
+            id = parseInt(search.slice(1), 10);
+
+        if (type == "E") {
+          sql = "SELECT exhibitorAttendees.id, 'E' as type, biller.register_date "+
+                "FROM exhibitorAttendees "+
+                "LEFT JOIN biller ON (exhibitorAttendees.userId = biller.userID AND exhibitorAttendees.eventId = biller.eventId) "+
+                "WHERE exhibitorAttendees.id = ? AND biller.status != -1";
+        } else {
+          sql = "SELECT group_members.id, 'G' as type, biller.register_date "+
+                "FROM group_members "+
+                "LEFT JOIN biller ON (group_members.groupUserId = biller.userID AND group_members.event_id = biller.eventId) "+
+                "WHERE group_members.id = ? AND biller.status != -1";
+        }
+        vars.push(id);
+      } else {
+        sql = "SELECT t.* FROM ( "
+        sql += "(SELECT group_members.id, 'G' as type, biller.register_date "+
+                  " FROM event_fields  "+
+                  " LEFT JOIN member_field_values ON (event_fields.local_id = member_field_values.field_id AND event_fields.event_id = member_field_values.event_id) "+
+                  " LEFT JOIN group_members ON (member_field_values.member_id = group_members.groupMemberId  AND member_field_values.event_id = group_members.event_id) "+
+                  " LEFT JOIN biller ON (group_members.groupUserId = biller.userID AND group_members.event_id = biller.eventId)"+
+                  " WHERE biller.status != -1 AND member_field_values.value LIKE ? AND (";
+        vars.push("%"+search+"%");
+        fields.forEach(function(field, index) {
+          if (index > 0) {
+              sql += " OR ";
+          }
+          sql += "event_fields.class = ?";
+          vars.push(field);
+        });
+        sql += ")) UNION (";
+        sql += "SELECT exhibitorAttendees.id, 'E' as type, biller.register_date "+
+              "FROM exhibitorAttendees "+
+              "LEFT JOIN biller ON (exhibitorAttendees.userId = biller.userID AND exhibitorAttendees.eventId = biller.eventId) "+
+              "WHERE biller.status != -1 AND (";
+        fields.forEach(function(field, index) {
+          if (index > 0) {
+              sql += " OR ";
+          }
+          sql += "exhibitorAttendees."+field+" LIKE ?";
+          vars.push("%"+search+"%");
+        });
+        sql += "))";
+        sql += ") AS  t";
+      }
+
+      obj.db.checkin
+      .query(
+        sql, null,
+        { raw: true }, vars
+      )
+      .success(function(attendees) {
+        registrants[0].total_entries = attendees.length;
+        cb(null);
+      });
+    },
+    function(cb) {
+      sql += " ORDER BY register_date DESC "+
+               "LIMIT "+start+","+limit;
+      obj.db.checkin
+      .query(
+        sql, null,
+        { raw: true }, vars
+      )
+      .success(function(attendees) {
+        var regs = [],
+            getReg = function(item, cb) {
+              returnCb = function(registrant) {
+                if (!underscore.isEmpty(registrant)) {
+                  regs.push(registrant);
+                }
+                cb();
+              }
+              obj.getAttendee(item.id, item.type, returnCb);
+            };
+
+        async.each(attendees, getReg, function(err){
+          cb(null, regs);
+        });
+      });
+    }
+  ],function(err, results) {
+    registrants[1] = results;
+    callback(registrants);
+  });
+};
+
 Registrants.prototype.pad = function(num, size) {
   var s = num+"";
   while (s.length < size) s = "0" + s;

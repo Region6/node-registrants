@@ -24,8 +24,18 @@ registrants.getAttendee(1, 'E', function(reg) {
         console.log(reg);
     });
 });
-**/
+
 
 registrants.getRange(1, 50, 'S', function(reg) {
   console.log(reg);
 });
+**/
+registrants.searchAttendees(
+ ["firstname"],
+ "Jo",
+ 0,
+ 50,
+ null,
+ function(registrants) {
+    console.log(registrants);
+})

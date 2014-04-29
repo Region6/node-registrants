@@ -969,6 +969,33 @@ Registrants.prototype.searchAttendees = function(fields, search, page, limit, ex
   });
 };
 
+Registrants.prototype.getCheckedInCount = function(callback) {
+  var obj = this;
+
+  async.waterfall([
+    function(cb) {
+      obj.models.CheckinGroupMembers
+      .findAndCountAll({
+         where: ["attend = 1"]
+      })
+      .success(function(result) {
+        cb(null, result.count);
+      });
+    },
+    function(count, cb) {
+      obj.models.CheckinExhibitorAttendees
+      .findAndCountAll({
+         where: ["attend = 1"]
+      })
+      .success(function(result) {
+        cb(null, count+result.count);
+      });
+    }
+  ],function(err, count) {
+    callback(count);
+  });
+};
+
 Registrants.prototype.pad = function(num, size) {
   var s = num+"";
   while (s.length < size) s = "0" + s;

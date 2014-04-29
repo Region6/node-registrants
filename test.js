@@ -29,7 +29,7 @@ registrants.getAttendee(1, 'E', function(reg) {
 registrants.getRange(1, 50, 'S', function(reg) {
   console.log(reg);
 });
-**/
+
 registrants.searchAttendees(
  ["firstname"],
  "Jo",
@@ -38,4 +38,10 @@ registrants.searchAttendees(
  null,
  function(registrants) {
     console.log(registrants);
-})
+});
+
+**/
+
+registrants.getCheckedInCount(function(count) {
+   console.log(count);
+});

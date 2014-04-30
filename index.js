@@ -418,7 +418,7 @@ Registrants.prototype.getExhibitorAttendee = function(regId, callback){
             checked_in_time: null,
             badge_prefix: attendee.event.badge_prefix,
             biller_id: attendee.biller.userId,
-            badgeFields = [
+            badgeFields: [
               "firstname",
               "lastname",
               "title",

@@ -8,9 +8,10 @@ var Registrants = require("./index"),
       "port": 3306
     });
 
-/**
-registrants.getAttendee(1, 'E', function(reg) {
+
+registrants.getAttendee('E00001', function(reg) {
     console.log(reg);
+    /**
     var values = {
       event_id: '84a8873a-92d5-11e3-a3e0-2b963df5580f',
       local_id: 1,
@@ -23,9 +24,10 @@ registrants.getAttendee(1, 'E', function(reg) {
     registrants.updateExhibitorAttendee(1, values, function(reg) {
         console.log(reg);
     });
+    **/
 });
 
-
+/**
 registrants.getRange(1, 50, 'S', function(reg) {
   console.log(reg);
 });
@@ -40,8 +42,9 @@ registrants.searchAttendees(
     console.log(registrants);
 });
 
-**/
+
 
 registrants.getCheckedInCount(function(count) {
    console.log(count);
 });
+**/

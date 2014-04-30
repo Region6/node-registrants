@@ -354,7 +354,7 @@ Registrants.prototype.initialize = function(options) {
   });
 };
 
-Registrants.prototype.getAttendee = function(regId, callback){
+Registrants.prototype.getAttendee = function(registrantId, callback){
   var regType = registrantId.slice(0,1),
       regId = parseInt(registrantId.slice(1), 10),
       returnCb = function(data) {
@@ -808,7 +808,7 @@ Registrants.prototype.updateRegistrantValues = function(regId, values, callback)
 
 Registrants.prototype.updateAttendeeValues = function(regId, values, callback) {
   var regType = registrantId.slice(0,1),
-      regId = parseInt(registrantId.slice(1), 10),
+      regId = parseInt(registrantId.slice(1), 10);
   if (regType == "E") {
     //console.log("Get Exhibitor Attendee");
     this.updateExhibitorAttendee(regId, values, callback);
@@ -816,7 +816,7 @@ Registrants.prototype.updateAttendeeValues = function(regId, values, callback) {
     //console.log("Get General Attendee");
     this.updateRegistrantValues(regId, values, callback);
   }
-});
+};
 
 Registrants.prototype.updateExhibitorAttendee = function(regId, values, callback) {
   var obj = this;

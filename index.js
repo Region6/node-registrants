@@ -850,7 +850,7 @@ Registrants.prototype.getRange = function(beginId, endId, type, callback) {
         obj.getAttendee(regId, returnCb);
       };
 
-  async.each(ids, getReg, function(err){
+  async.eachSeries(ids, getReg, function(err){
     callback(registrants);
   });
 };

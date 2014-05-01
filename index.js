@@ -910,7 +910,7 @@ Registrants.prototype.updateRegistrantValues = function(regId, values, callback)
 
 };
 
-Registrants.prototype.updateAttendeeValues = function(regId, values, callback) {
+Registrants.prototype.updateAttendeeValues = function(registrantId, values, callback) {
   var regType = registrantId.slice(0,1),
       regId = parseInt(registrantId.slice(1), 10);
   if (regType == "E") {

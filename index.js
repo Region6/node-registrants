@@ -5,7 +5,22 @@ var fs = require('fs'),
     uuid = require("node-uuid"),
     glob = require('glob'),
     underscore = require('underscore'),
-    Sequelize = require("sequelize");
+    Sequelize = require("sequelize"),
+    exhFields = [
+      {label: "First Name", id: "firstname"},
+      {label: "Last Name", id: "lastname"},
+      {label: "Title", id: "title"},
+      {label: "Site ID", id: "siteId"},
+      {label: "Company", id: "organization"},
+      {label: "Street 1", id: "address"},
+      {label: "Street 2", id: "address2"},
+      {label: "City", id: "city"},
+      {label: "State", id: "state"},
+      {label: "Zip", id: "zip"},
+      {label: "Phone", id: "phone"},
+      {label: "Email", id: "email"}
+    ],
+    types = ['Text','Select','TextArea','Checkbox','Select','Text','Text','Text','Text'];
 
 
 Registrants = function(options)
@@ -450,6 +465,12 @@ Registrants.prototype.createRegistrantModel = function(attendee, cb) {
         callback(null, attendee);
       });
     },
+    function(attendee, callback) {
+      obj.getRegistrantFields(attendee, function(fields) {
+        attendee = underscore.extend(attendee, fields);
+        callback(null, attendee);
+      });
+    },
     function(attendee, callback){
       obj.getRegistrantBadgeFields(attendee, function(badgeFields) {
         attendee.badgeFields = badgeFields;
@@ -500,6 +521,12 @@ Registrants.prototype.createExhibitorModel = function(attendee, cb) {
     function(callback){
       obj.getEvent(attendee, function(event) {
         attendee.event = event;
+        callback(null, attendee);
+      });
+    },
+    function(attendee, callback){
+      obj.getExhibitorFields(attendee, function(fields) {
+        attendee = underscore.extend(attendee, fields);
         callback(null, attendee);
       });
     },
@@ -557,13 +584,18 @@ Registrants.prototype.getPayments = function(attendee, callback) {
 };
 
 Registrants.prototype.getBiller = function(attendee, callback) {
+  var obj = this;
   this.models.CheckinBiller.find({
     where: {
       userId: attendee.userId,
       eventId: attendee.eventId
     }
   }).success(function(biller) {
-    callback(biller.toJSON());
+    biller = biller.toJSON();
+    obj.getRegistrantFields(biller, function(fields) {
+      biller = underscore.extend(biller, fields);
+      callback(biller);
+    });
   });
 };
 
@@ -575,6 +607,69 @@ Registrants.prototype.getEvent = function(attendee, callback) {
   }).success(function(event) {
     callback(event.toJSON());
   });
+};
+
+Registrants.prototype.getRegistrantFields = function(attendee, callback) {
+  var schema = {},
+      fieldset = [],
+      processFields = function (item, cback){
+        var schemaRow = {
+              "title": item.label,
+              "type": types[item.type]
+            };
+        if (item.values && (item.type == 4 || item.type == 1)) {
+          var values = item.values.split("|");
+          values.unshift("");
+          schemaRow.options = values;
+        }
+        schema["fields."+item.name] = schemaRow;
+        fieldset.push("fields."+item.name);
+        cback(null);
+      };
+
+  this.models.CheckinEventFields.findAll({
+    where: {
+      event_id: attendee.eventId,
+      showed: 0
+    },
+    order: "ordering ASC"
+  }).success(function(fields) {
+    async.eachSeries(fields, processFields, function(err){
+      callback({
+        fields: schema,
+        fieldset: fieldset
+      });
+    });
+  });
+};
+
+Registrants.prototype.getExhibitorFields = function(attendee, callback) {
+  var schema = {},
+      fieldset = [],
+      processFields = function (item, cback){
+        var schemaRow = {
+              "title": item.label,
+              "type": "Text"
+            };
+        /*
+        if (item.values && (item.type == 4 || item.type == 1)) {
+          var values = item.values.split("|");
+          values.unshift("");
+          schemaRow.options = values;
+        }
+        */
+        schema["fields."+item.id] = schemaRow;
+        fieldset.push("fields."+item.id);
+        cback(null);
+      };
+
+  async.eachSeries(exhFields, processFields, function(err){
+    callback({
+      fields: schema,
+      fieldset: fieldset
+    });
+  });
+
 };
 
 Registrants.prototype.getBillerFieldValues = function(attendee, cb) {

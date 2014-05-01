@@ -385,8 +385,6 @@ Registrants.prototype.getRegistrant = function(regId, callback){
             registrantId: attendee.event.badge_prefix + obj.pad(attendee.id, 5),
             confirmation: attendee.confirmnum,
             paid: false,
-            checked_in: null,
-            checked_in_time: null,
             badge_prefix: attendee.event.badge_prefix,
             biller_id: attendee.biller.userId
           }
@@ -414,8 +412,6 @@ Registrants.prototype.getExhibitorAttendee = function(regId, callback){
             registrantId: attendee.event.badge_prefix + obj.pad(attendee.id, 5),
             confirmation: attendee.biller.confirmNum,
             paid: false,
-            checked_in: null,
-            checked_in_time: null,
             badge_prefix: attendee.event.badge_prefix,
             biller_id: attendee.biller.userId,
             badgeFields: [

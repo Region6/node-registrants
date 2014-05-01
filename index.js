@@ -622,8 +622,8 @@ Registrants.prototype.getRegistrantFields = function(attendee, callback) {
           values.unshift("");
           schemaRow.options = values;
         }
-        schema["fields."+item.name] = schemaRow;
-        fieldset.push("fields."+item.name);
+        schema[item.name] = schemaRow;
+        fieldset.push(item.name);
         cback(null);
       };
 
@@ -658,8 +658,8 @@ Registrants.prototype.getExhibitorFields = function(attendee, callback) {
           schemaRow.options = values;
         }
         */
-        schema["fields."+item.id] = schemaRow;
-        fieldset.push("fields."+item.id);
+        schema[item.id] = schemaRow;
+        fieldset.push(item.id);
         cback(null);
       };
 

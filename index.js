@@ -622,8 +622,8 @@ Registrants.prototype.getRegistrantFields = function(attendee, callback) {
           values.unshift("");
           schemaRow.options = values;
         }
-        schema[item.name] = schemaRow;
-        fieldset.push(item.name);
+        schema["fields."+item.name] = schemaRow;
+        fieldset.push("fields."+item.name);
         cback(null);
       };
 
@@ -636,7 +636,7 @@ Registrants.prototype.getRegistrantFields = function(attendee, callback) {
   }).success(function(fields) {
     async.eachSeries(fields, processFields, function(err){
       callback({
-        fields: schema,
+        schema: schema,
         fieldset: fieldset
       });
     });
@@ -658,14 +658,14 @@ Registrants.prototype.getExhibitorFields = function(attendee, callback) {
           schemaRow.options = values;
         }
         */
-        schema[item.id] = schemaRow;
-        fieldset.push(item.id);
+        schema["fields."+item.id] = schemaRow;
+        fieldset.push("fields."+item.id);
         cback(null);
       };
 
   async.eachSeries(exhFields, processFields, function(err){
     callback({
-      fields: schema,
+      schema: schema,
       fieldset: fieldset
     });
   });

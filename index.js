@@ -523,12 +523,6 @@ Registrants.prototype.createRegistrantModel = function(attendee, options, cb) {
         callback(null, attendee);
       });
     },
-    function(attendee, callback){
-      obj.getPayments(attendee, function(payments) {
-        attendee = underscore.extend(attendee, payments);
-        callback(null, attendee);
-      });
-    },
     function(attendee, callback) {
       obj.getBiller(attendee, function(values) {
         attendee.biller = values;
@@ -540,6 +534,12 @@ Registrants.prototype.createRegistrantModel = function(attendee, options, cb) {
         var fieldVals = obj.shallowCopy(values);
         attendee = underscore.extend(fieldVals, attendee);
         attendee.biller = underscore.extend(attendee.biller, values);
+        callback(null, attendee);
+      });
+    },
+    function(attendee, callback){
+      obj.getPayments(attendee, function(payments) {
+        attendee = underscore.extend(attendee, payments);
         callback(null, attendee);
       });
     },
@@ -580,12 +580,6 @@ Registrants.prototype.createExhibitorModel = function(attendee, options, cb) {
         callback(null, attendee);
       });
     },
-    function(attendee, callback){
-      obj.getPayments(attendee, function(payments) {
-        attendee = underscore.extend(attendee, payments);
-        callback(null, attendee);
-      });
-    },
     function(attendee, callback) {
       obj.getBiller(attendee, function(values) {
         attendee.biller = values;
@@ -598,6 +592,12 @@ Registrants.prototype.createExhibitorModel = function(attendee, options, cb) {
         callback(null, attendee);
       });
     },
+    function(attendee, callback){
+      obj.getPayments(attendee, function(payments) {
+        attendee = underscore.extend(attendee, payments);
+        callback(null, attendee);
+      });
+    },
     function(attendee, callback) {
       obj.getCreditTrans(attendee, function(values) {
         attendee.creditCardTrans = values;
@@ -605,11 +605,10 @@ Registrants.prototype.createExhibitorModel = function(attendee, options, cb) {
       });
     },
     function(attendee, callback) {
-        obj.getExhibitorAttendeesNumber(attendee, function(number) {
-          attendee.totalAttendees = number;
-          callback(null, attendee);
-        });
-
+      obj.getExhibitorAttendeesNumber(attendee, function(number) {
+        attendee.totalAttendees = number;
+        callback(null, attendee);
+      });
     },
     function(attendee, callback) {
       if (!options.excludeLinked) {
@@ -630,7 +629,7 @@ Registrants.prototype.getPayments = function(attendee, callback) {
   var paid = false;
   this.models.CheckinEventFees.findAll({
     where: {
-      user_id: attendee.billerId,
+      user_id: attendee.biller.userId,
       event_id: attendee.eventId
     }
   }).success(function(payments) {

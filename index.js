@@ -442,7 +442,6 @@ Registrants.prototype.getRegistrant = function(regId, callback){
             event_id: attendee.eventId,
             registrantId: attendee.event.badge_prefix + obj.pad(attendee.id, 5),
             confirmation: attendee.confirmnum,
-            paid: false,
             badge_prefix: attendee.event.badge_prefix,
             biller_id: attendee.biller.userId
           }
@@ -469,7 +468,6 @@ Registrants.prototype.getExhibitorAttendee = function(regId, callback){
             event_id: attendee.eventId,
             registrantId: attendee.event.badge_prefix + obj.pad(attendee.id, 5),
             confirmation: attendee.biller.confirmNum,
-            paid: false,
             badge_prefix: attendee.event.badge_prefix,
             biller_id: attendee.biller.userId,
             badgeFields: [
@@ -630,9 +628,9 @@ Registrants.prototype.getPayments = function(attendee, callback) {
   }).success(function(payments) {
 
     async.reduce(payments, [], function(payment, item, cb){
-      var fee = parseFloat(row.fee),
-          paid_amount = parseFloat(row.paid_amount);
-      paid = (fee > paid_amount) ? false : true;
+      var due = parseInt(item.due, 10);
+      //console.log("paid", due);
+      paid = (due == 0) ? true : paid;
       payment.push(item.toJSON());
       cb(null, payment);
     }, function(err, result){
@@ -641,13 +639,6 @@ Registrants.prototype.getPayments = function(attendee, callback) {
         paid: paid
       });
     });
-
-    results[4].forEach(function(row, index) {
-                row.fee = parseFloat(row.fee);
-                row.paid_amount = parseFloat(row.paid_amount);
-                reg.paid = (row.fee > row.paid_amount) ? false : true;
-            });
-
   });
 };
 

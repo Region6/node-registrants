@@ -630,7 +630,7 @@ Registrants.prototype.getPayments = function(attendee, callback) {
   var paid = false;
   this.models.CheckinEventFees.findAll({
     where: {
-      user_id: attendee.userId,
+      user_id: attendee.billerId,
       event_id: attendee.eventId
     }
   }).success(function(payments) {

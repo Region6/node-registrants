@@ -922,7 +922,7 @@ Registrants.prototype.updateRegistrant = function(regId, values, callback) {
     var obj = this;
 
     this.models.CheckinGroupMembers.find(regId).success(function(member) {
-      member.updateAttributes(values.field).success(function(update) {
+      member.updateAttributes(values.fields).success(function(update) {
         obj.getRegistrant(regId, {}, callback);
       });
     });

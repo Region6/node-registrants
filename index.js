@@ -993,6 +993,18 @@ Registrants.prototype.updateAttendeeValues = function(registrantId, values, call
   }
 };
 
+Registrants.prototype.updateAttendee = function(registrantId, values, callback) {
+  var regType = registrantId.slice(0,1),
+      regId = parseInt(registrantId.slice(1), 10);
+  if (regType == "E") {
+    //console.log("Get Exhibitor Attendee");
+    this.updateExhibitorAttendee(regId, values, callback);
+  } else {
+    //console.log("Get General Attendee");
+    this.updateRegistrant(regId, values, callback);
+  }
+};
+
 Registrants.prototype.updateExhibitorAttendee = function(regId, values, callback) {
   var obj = this;
   //console.log(values);

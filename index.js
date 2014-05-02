@@ -48,7 +48,8 @@ Registrants.prototype.initialize = function(options) {
         define: {
           freezeTableName: true,
           timestamps: false
-        }
+        },
+        logging: this.options.logging || false
   });
 
   this.models.Events = this.db.checkin.define('event', {
@@ -921,7 +922,7 @@ Registrants.prototype.updateRegistrant = function(regId, values, callback) {
     var obj = this;
 
     this.models.CheckinGroupMembers.find(regId).success(function(member) {
-      member.updateAttributes(values).success(function(update) {
+      member.updateAttributes(values.field).success(function(update) {
         obj.getRegistrant(regId, {}, callback);
       });
     });

@@ -528,7 +528,7 @@ Registrants.prototype.createRegistrantModel = function(attendee, cb) {
     },
     function(attendee, callback){
       obj.getPayments(attendee, function(payments) {
-        attendee.payments = payments;
+        attendee = underscore.extend(attendee, payments);
         callback(null, attendee);
       });
     },
@@ -581,7 +581,7 @@ Registrants.prototype.createExhibitorModel = function(attendee, cb) {
     },
     function(attendee, callback){
       obj.getPayments(attendee, function(payments) {
-        attendee.payments = payments;
+        attendee = underscore.extend(attendee, payments);
         callback(null, attendee);
       });
     },
@@ -621,6 +621,7 @@ Registrants.prototype.createExhibitorModel = function(attendee, cb) {
 };
 
 Registrants.prototype.getPayments = function(attendee, callback) {
+  var paid = false;
   this.models.CheckinEventFees.findAll({
     where: {
       user_id: attendee.userId,
@@ -629,11 +630,23 @@ Registrants.prototype.getPayments = function(attendee, callback) {
   }).success(function(payments) {
 
     async.reduce(payments, [], function(payment, item, cb){
-        payment.push(item.toJSON());
-        cb(null, payment);
+      var fee = parseFloat(row.fee),
+          paid_amount = parseFloat(row.paid_amount);
+      paid = (fee > paid_amount) ? false : true;
+      payment.push(item.toJSON());
+      cb(null, payment);
     }, function(err, result){
-        callback(result);
+      callback({
+        payments: result,
+        paid: paid
+      });
     });
+
+    results[4].forEach(function(row, index) {
+                row.fee = parseFloat(row.fee);
+                row.paid_amount = parseFloat(row.paid_amount);
+                reg.paid = (row.fee > row.paid_amount) ? false : true;
+            });
 
   });
 };

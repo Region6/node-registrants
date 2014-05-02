@@ -420,21 +420,20 @@ Registrants.prototype.getAttendee = function(registrantId, callback){
       };
   if (regType == "E") {
     //console.log("Get Exhibitor Attendee");
-    this.getExhibitorAttendee(regId, returnCb);
+    this.getExhibitorAttendee(regId, {}, returnCb);
   } else {
     //console.log("Get General Attendee");
-    this.getRegistrant(regId, returnCb);
+    this.getRegistrant(regId, {}, returnCb);
   }
 };
 
-Registrants.prototype.getRegistrant = function(regId, callback){
+Registrants.prototype.getRegistrant = function(regId, options, callback){
   var obj = this;
   this.models.CheckinGroupMembers
   .find(regId)
   .success(function(member) {
     if (member !== null) {
-
-      obj.createRegistrantModel(member.toJSON(), function(attendee) {
+      obj.createRegistrantModel(member.toJSON(), options, function(attendee) {
         attendee = underscore.extend(
           attendee,
           {
@@ -454,13 +453,13 @@ Registrants.prototype.getRegistrant = function(regId, callback){
   })
 };
 
-Registrants.prototype.getExhibitorAttendee = function(regId, callback){
+Registrants.prototype.getExhibitorAttendee = function(regId, options, callback){
   var obj = this;
   this.models.CheckinExhibitorAttendees
   .find(regId)
   .success(function(member) {
     if (member !== null) {
-      obj.createExhibitorModel(member.toJSON(), function(attendee) {
+      obj.createExhibitorModel(member.toJSON(), options, function(attendee) {
         attendee = underscore.extend(
           attendee,
           {
@@ -493,7 +492,7 @@ Registrants.prototype.getExhibitorAttendee = function(regId, callback){
   })
 };
 
-Registrants.prototype.createRegistrantModel = function(attendee, cb) {
+Registrants.prototype.createRegistrantModel = function(attendee, options, cb) {
   var obj = this;
   attendee.memberId = attendee.groupMemberId;
   attendee.userId = attendee.groupUserId;
@@ -551,17 +550,21 @@ Registrants.prototype.createRegistrantModel = function(attendee, cb) {
       });
     },
     function(attendee, callback) {
-      obj.getAdditionalAttendees(attendee, function(attendees) {
-        attendee.linked = attendees;
+      if (!options.excludeLinked) {
+        obj.getAdditionalAttendees(attendee, function(attendees) {
+          attendee.linked = attendees;
+          callback(null, attendee);
+        });
+      } else {
         callback(null, attendee);
-      });
+      }
     }
   ],function(err, results) {
       cb(results);
   });
 };
 
-Registrants.prototype.createExhibitorModel = function(attendee, cb) {
+Registrants.prototype.createExhibitorModel = function(attendee, options, cb) {
   var obj = this;
   attendee.fields = this.shallowCopy(attendee);
   async.waterfall([
@@ -602,16 +605,21 @@ Registrants.prototype.createExhibitorModel = function(attendee, cb) {
       });
     },
     function(attendee, callback) {
-      obj.getExhibitorAttendeesNumber(attendee, function(number) {
-        attendee.totalAttendees = number;
-        callback(null, attendee);
-      });
+        obj.getExhibitorAttendeesNumber(attendee, function(number) {
+          attendee.totalAttendees = number;
+          callback(null, attendee);
+        });
+
     },
     function(attendee, callback) {
-      obj.getExhibitorAttendees(attendee, function(attendees) {
-        attendee.linked = attendees;
+      if (!options.excludeLinked) {
+        obj.getExhibitorAttendees(attendee, function(attendees) {
+          attendee.linked = attendees;
+          callback(null, attendee);
+        });
+      } else {
         callback(null, attendee);
-      });
+      }
     }
   ],function(err, results) {
       cb(results);
@@ -862,6 +870,7 @@ Registrants.prototype.getExhibitorAttendeesNumber = function(attendee, callback)
 };
 
 Registrants.prototype.getExhibitorAttendees = function(attendee, callback) {
+  var obj = this;
   this.models.CheckinExhibitorAttendees.findAll({
     where: {
       userId: attendee.userId,
@@ -869,7 +878,13 @@ Registrants.prototype.getExhibitorAttendees = function(attendee, callback) {
     }
   }).success(function(attendees) {
     var convertToJson = function(item, cback) {
-          cback(null, item.toJSON());
+          var regId = attendee.event.badge_prefix + obj.pad(item.id, 5),
+              returnCb = function(reg) {
+                cback(null, reg);
+              };
+          console.log("Linked Id", regId);
+          obj.getExhibitorAttendee(item.id, {excludeLinked: true}, returnCb);
+
         };
     async.map(attendees, convertToJson, function(err, results){
       callback(results);
@@ -887,14 +902,15 @@ Registrants.prototype.getAdditionalAttendees = function(attendee, callback) {
   }).success(function(attendees) {
     var convertToJson = function(item, cback) {
           var cb = function(values) {
-                reg = underscore.extend(reg, values);
-                cback(null, reg);
+                cback(null, values);
               },
-              reg = item.toJSON();
+              reg = item.toJSON(),
+              regId = attendee.event.badge_prefix + obj.pad(reg.id, 5);
+          console.log("Linked Id", regId);
           reg.memberId = reg.groupMemberId;
           reg.userId = reg.groupUserId;
           reg.eventId = reg.event_id;
-          obj.getRegistrantFieldValues(reg, cb);
+          obj.getRegistrant(reg.id, {excludeLinked: true}, cb);
         };
     async.map(attendees, convertToJson, function(err, results){
       callback(results);
@@ -908,7 +924,7 @@ Registrants.prototype.updateRegistrant = function(regId, values, callback) {
 
     this.models.CheckinGroupMembers.find(regId).success(function(member) {
       member.updateAttributes(values).success(function(update) {
-        obj.getRegistrant(regId, callback);
+        obj.getRegistrant(regId, {}, callback);
       });
     });
 
@@ -974,7 +990,7 @@ Registrants.prototype.updateRegistrantValues = function(regId, values, callback)
               }
             }).success(function(member) {
               member.updateAttributes(recs).success(function(update) {
-                obj.getRegistrant(regId, callback);
+                obj.getRegistrant(regId, {}, callback);
               });
             });
           });
@@ -1019,7 +1035,7 @@ Registrants.prototype.updateExhibitorAttendee = function(regId, values, callback
     attendee.updateAttributes(
       values.fields
     ).success(function(attendee) {
-      obj.getExhibitorAttendee(regId, callback);
+      obj.getExhibitorAttendee(regId, {}, callback);
     });
   });
 };

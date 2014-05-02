@@ -712,8 +712,7 @@ Registrants.prototype.getRegistrantFields = function(attendee, callback) {
 
   this.models.CheckinEventFields.findAll({
     where: {
-      event_id: attendee.eventId,
-      showed: 0
+      event_id: attendee.eventId
     },
     order: "ordering ASC"
   }).success(function(fields) {

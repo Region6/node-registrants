@@ -367,6 +367,49 @@ Registrants.prototype.initialize = function(options) {
     paidDate:             { type: Sequelize.DATE },
     siteId:               { type: Sequelize.STRING(255) }
   });
+
+  this.models.Transactions = this.db.checkin.define('transactions', {
+    id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+    transId : { type: Sequelize.INTEGER(11) },
+    submitTimeUTC : { type: Sequelize.DATE },
+    submitTimeLocal : { type: Sequelize.DATE },
+    transactionType : { type: Sequelize.STRING(255) },
+    transactionStatus : { type: Sequelize.STRING(255) },
+    responseCode : { type: Sequelize.INTEGER(11) },
+    responseReasonCode : { type: Sequelize.INTEGER(11) },
+    responseReasonDescription : { type: Sequelize.STRING(255) },
+    authCode : { type: Sequelize.INTEGER(11) },
+    AVSResponse : { type: Sequelize.STRING(2) },
+    cardCodeResponse : { type: Sequelize.STRING(2) },
+    batchId : { type: Sequelize.INTEGER(11) },
+    settlementTimeUTC : { type: Sequelize.DATE },
+    settlementTimeLocal : { type: Sequelize.DATE },
+    settlementState : { type: Sequelize.STRING(255) },
+    invoiceNumber : { type: Sequelize.STRING(255) },
+    description : { type: Sequelize.STRING(255) },
+    authAmount decimal(13,2) NOT NULL,
+    settleAmount decimal(13,2) NOT NULL,
+    taxExempt tinyint(1) NOT NULL,
+    cardNumber : { type: Sequelize.STRING(50) },
+    expirationDate : { type: Sequelize.STRING(10) },
+    cardType : { type: Sequelize.STRING(100) },
+    email : { type: Sequelize.STRING(255) },
+    billToFirstName : { type: Sequelize.STRING(255) },
+    billToLastName : { type: Sequelize.STRING(255) },
+    billToAddress : { type: Sequelize.STRING(255) },
+    billToCity : { type: Sequelize.STRING(255) },
+    billToState : { type: Sequelize.STRING(255) },
+    billToZip : { type: Sequelize.STRING(15) },
+    billToPhoneNumber : { type: Sequelize.STRING(25) },
+    shipToFirstName : { type: Sequelize.STRING(255) },
+    shipToLastName : { type: Sequelize.STRING(255) },
+    shipToAddress : { type: Sequelize.STRING(255) },
+    shipToCity : { type: Sequelize.STRING(255) },
+    shipToState : { type: Sequelize.STRING(255) },
+    shipToZip : { type: Sequelize.STRING(15) },
+    refTransId : { type: Sequelize.INTEGER(11) }
+  });
+
 };
 
 Registrants.prototype.getAttendee = function(registrantId, callback){
@@ -504,6 +547,12 @@ Registrants.prototype.createRegistrantModel = function(attendee, cb) {
       });
     },
     function(attendee, callback) {
+      obj.getCreditTrans(attendee, function(values) {
+        attendee.creditCardTrans = values;
+        callback(null, attendee);
+      });
+    },
+    function(attendee, callback) {
       obj.getAdditionalAttendees(attendee, function(attendees) {
         attendee.linked = attendees;
         callback(null, attendee);
@@ -549,6 +598,12 @@ Registrants.prototype.createExhibitorModel = function(attendee, cb) {
       });
     },
     function(attendee, callback) {
+      obj.getCreditTrans(attendee, function(values) {
+        attendee.creditCardTrans = values;
+        callback(null, attendee);
+      });
+    },
+    function(attendee, callback) {
       obj.getExhibitorAttendeesNumber(attendee, function(number) {
         attendee.totalAttendees = number;
         callback(null, attendee);
@@ -576,6 +631,22 @@ Registrants.prototype.getPayments = function(attendee, callback) {
     async.reduce(payments, [], function(payment, item, cb){
         payment.push(item.toJSON());
         cb(null, payment);
+    }, function(err, result){
+        callback(result);
+    });
+
+  });
+};
+
+Registrants.prototype.getCreditTrans = function(attendee, callback) {
+  this.models.Transactions.findAll({
+    where: {
+      invoiceNumber: attendee.biller.confirmNum
+    }
+  }).success(function(trans) {
+    async.reduce(trans, [], function(transactions, item, cb){
+        transactions.push(item.toJSON());
+        cb(null, transactions);
     }, function(err, result){
         callback(result);
     });

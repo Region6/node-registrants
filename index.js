@@ -878,12 +878,14 @@ Registrants.prototype.getExhibitorAttendees = function(attendee, callback) {
   }).success(function(attendees) {
     var convertToJson = function(item, cback) {
           var regId = attendee.event.badge_prefix + obj.pad(item.id, 5),
-              returnCb = function(reg) {
-                cback(null, reg);
-              };
+              reg = item.toJSON();
           console.log("Linked Id", regId);
-          obj.getExhibitorAttendee(item.id, {excludeLinked: true}, returnCb);
-
+          reg.memberId = reg.groupMemberId;
+          reg.userId = reg.groupUserId;
+          reg.eventId = reg.event_id;
+          reg.registrantId = regId;
+          reg.paid = attendee.paid;;
+          cback(null, reg);
         };
     async.map(attendees, convertToJson, function(err, results){
       callback(results);
@@ -901,7 +903,8 @@ Registrants.prototype.getAdditionalAttendees = function(attendee, callback) {
   }).success(function(attendees) {
     var convertToJson = function(item, cback) {
           var cb = function(values) {
-                cback(null, values);
+                reg = underscore.extend(reg, values);
+                cback(null, reg);
               },
               reg = item.toJSON(),
               regId = attendee.event.badge_prefix + obj.pad(reg.id, 5);
@@ -909,7 +912,9 @@ Registrants.prototype.getAdditionalAttendees = function(attendee, callback) {
           reg.memberId = reg.groupMemberId;
           reg.userId = reg.groupUserId;
           reg.eventId = reg.event_id;
-          obj.getRegistrant(reg.id, {excludeLinked: true}, cb);
+          reg.registrantId = regId;
+          reg.paid = attendee.paid;
+          obj.getRegistrantValues(reg.id, cb);
         };
     async.map(attendees, convertToJson, function(err, results){
       callback(results);

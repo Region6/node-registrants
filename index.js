@@ -1194,7 +1194,7 @@ Registrants.prototype.searchAttendees = function(fields, search, page, limit, ex
       });
     },
     function(cb) {
-      sql += " ORDER BY register_date DESC "+
+      sql += " ORDER BY id DESC "+
                "LIMIT "+start+","+limit;
       obj.db.checkin
       .query(

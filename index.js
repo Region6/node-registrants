@@ -912,7 +912,7 @@ Registrants.prototype.getAdditionalAttendees = function(attendee, callback) {
           reg.eventId = reg.event_id;
           reg.registrantId = regId;
           reg.paid = attendee.paid;
-          obj.getRegistrantFieldValues(reg.id, cb);
+          obj.getRegistrantFieldValues(reg, cb);
         };
     async.map(attendees, convertToJson, function(err, results){
       callback(results);

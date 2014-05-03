@@ -9,7 +9,7 @@ var Registrants = require("./index"),
     });
 
 
-registrants.getAttendee('E00019', function(reg) {
+registrants.getAttendee('G01065', function(reg) {
     console.log(reg);
     /**
     var values = {

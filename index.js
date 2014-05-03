@@ -1018,7 +1018,7 @@ Registrants.prototype.updateRegistrantValues = function(regId, values, callback)
             obj.models.CheckinGroupMembers.find({
               where: {
                 event_id: values.event_id,
-                groupMemberId: values.local_id
+                groupMemberId: values.memberId
               }
             }).success(function(member) {
               member.updateAttributes(recs).success(function(update) {

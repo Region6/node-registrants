@@ -7,18 +7,18 @@ var fs = require('fs'),
     underscore = require('underscore'),
     Sequelize = require("sequelize"),
     exhFields = [
-      {label: "First Name", id: "firstname"},
-      {label: "Last Name", id: "lastname"},
-      {label: "Title", id: "title"},
-      {label: "Site ID", id: "siteId"},
-      {label: "Company", id: "organization"},
-      {label: "Street 1", id: "address"},
-      {label: "Street 2", id: "address2"},
-      {label: "City", id: "city"},
-      {label: "State", id: "state"},
-      {label: "Zip", id: "zip"},
-      {label: "Phone", id: "phone"},
-      {label: "Email", id: "email"}
+      {label: "First Name", id: "firstname", class:"firstname"},
+      {label: "Last Name", id: "lastname", class:"lastname"},
+      {label: "Title", id: "title", class:"title"},
+      {label: "Site ID", id: "siteId", class:"siteid"},
+      {label: "Company", id: "organization", class:"company"},
+      {label: "Street 1", id: "address", class:"street1"},
+      {label: "Street 2", id: "address2", class:"street2"},
+      {label: "City", id: "city", class:"city"},
+      {label: "State", id: "state", class:"state"},
+      {label: "Zip", id: "zip", class:"zip"},
+      {label: "Phone", id: "phone", class:"phone"},
+      {label: "Email", id: "email", class:"email"}
     ],
     types = ['Text','Select','TextArea','Checkbox','Select','Text','Text','Text','Text'];
 
@@ -482,7 +482,8 @@ Registrants.prototype.getExhibitorAttendee = function(regId, options, callback){
               "zip",
               "phone",
               "email"
-            ]
+            ],
+            badgeSchema: exhFields
           }
         );
         callback(attendee);
@@ -513,8 +514,8 @@ Registrants.prototype.createRegistrantModel = function(attendee, options, cb) {
       });
     },
     function(attendee, callback){
-      obj.getRegistrantBadgeFields(attendee, function(badgeFields) {
-        attendee.badgeFields = badgeFields;
+      obj.getRegistrantBadgeFields(attendee, function(values) {
+        attendee = underscore.extend(attendee, values);
         callback(null, attendee);
       });
     },
@@ -559,6 +560,18 @@ Registrants.prototype.createRegistrantModel = function(attendee, options, cb) {
       } else {
         callback(null, attendee);
       }
+    },
+    function(attendee, callback) {
+      async.each(
+        attendee.badgeSchema,
+        function(field, callback) {
+          attendee[field.class] = attendee[field.id];
+          callback(null);
+        },
+        function(err) {
+          callback(null, attendee);
+        }
+      );
     }
   ],function(err, results) {
       cb(results);
@@ -620,6 +633,18 @@ Registrants.prototype.createExhibitorModel = function(attendee, options, cb) {
       } else {
         callback(null, attendee);
       }
+    },
+    function(attendee, callback) {
+      async.each(
+        attendee.badgeSchema,
+        function(field, callback) {
+          attendee[field.class] = attendee[field.id];
+          callback(null);
+        },
+        function(err) {
+          callback(null, attendee);
+        }
+      );
     }
   ],function(err, results) {
       cb(results);
@@ -797,6 +822,7 @@ Registrants.prototype.getBillerFieldValues = function(attendee, cb) {
 };
 
 Registrants.prototype.getRegistrantBadgeFields = function(attendee, cb) {
+  var schema = [];
   this.models.CheckinEventFields.findAll({
     where: {
       badge_order: { gt: 0 },
@@ -807,10 +833,14 @@ Registrants.prototype.getRegistrantBadgeFields = function(attendee, cb) {
     ]
   }).success(function(results) {
     async.reduce(results, [], function(fields, item, callback) {
+      schema.push({class: item.class, id: item.name});
       fields.push(item.name);
       callback(null, fields);
     }, function(err, result){
-      cb(result);
+      cb({
+        badgeSchema: schema,
+        badgeFields: result
+      });
     });
   });
 };

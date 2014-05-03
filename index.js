@@ -880,11 +880,9 @@ Registrants.prototype.getExhibitorAttendees = function(attendee, callback) {
           var regId = attendee.event.badge_prefix + obj.pad(item.id, 5),
               reg = item.toJSON();
           console.log("Linked Id", regId);
-          reg.memberId = reg.groupMemberId;
-          reg.userId = reg.groupUserId;
-          reg.eventId = reg.event_id;
+          reg.memberId = reg.id;
           reg.registrantId = regId;
-          reg.paid = attendee.paid;;
+          reg.paid = attendee.paid;
           cback(null, reg);
         };
     async.map(attendees, convertToJson, function(err, results){

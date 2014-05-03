@@ -564,7 +564,7 @@ Registrants.prototype.createRegistrantModel = function(attendee, options, cb) {
       async.each(
         attendee.badgeSchema,
         function(field, callback) {
-          attendee[field.class] = attendee[field.id];
+          attendee[field.class] = attendee[field.id] || "";
           callback(null);
         },
         function(err) {
@@ -1249,6 +1249,140 @@ Registrants.prototype.getCheckedInCount = function(callback) {
     }
   ],function(err, count) {
     callback(count);
+  });
+};
+
+Registrants.prototype.initRegistrant = function(values, callback) {
+  var retCallback = function(registrants) {
+        callback(registrants);
+      },
+      obj = this;
+
+  async.waterfall([
+    function(cb){
+      obj.models.CheckinBiller.find({
+        where: {
+          eventId: values.eventId
+        },
+        order: "userId DESC",
+        limit: 1
+      }).success(function(biller) {
+        var reg = {};
+        reg.biller = biller.toJSON();
+        reg.userId = parseInt(biller.userId,10) + 1;
+        cb(null, reg);
+      });
+    },
+    function(reg, cb) {
+      obj.models.CheckinEventFields.findAll({
+        where: {
+          event_id: values.eventId
+        },
+        order: "ordering ASC"
+      }).success(function(fields) {
+        var convertToJson = function(item, cback) {
+              cback(null, item.toJSON());
+            };
+        async.map(fields, convertToJson, function(err, results){
+          reg.fields = results;
+          cb(null, reg);
+        });
+      });
+    },
+    function(reg, cb){
+      obj.models.CheckinGroupMembers.find({
+        where: {
+          event_id: values.eventId
+        },
+        order: "groupMemberId DESC",
+        limit: 1
+      }).success(function(lastMember) {
+        reg.lastMember = lastMember.toJSON();
+        reg.memberId = parseInt(lastMember.groupMemberId,10) + 1,
+        cb(null, reg);
+      });
+    },
+    function(reg, cb){
+      obj.getEvent({eventId: values.eventId}, function(event) {
+        reg.confirmNum = event.confirm_number_prefix+(parseInt(reg.lastMember.confirmnum.split("-")[1])+1);
+        reg.event = event;
+        cb(null, reg);
+      });
+    },
+    function(reg, cb){
+      var vars = {
+            "userId": reg.userId,
+            "eventId": values.eventId,
+            "local_eventId": values.slabId,
+            "type": "G",
+            "register_date": "0000-00-00 00:00:00",
+            "due_amount": 0.00,
+            "confirmNum": reg.confirmNum,
+            "status": 1,
+            "memtot": 1
+          };
+
+      obj.models.CheckinBiller.create(vars).success(function(biller) {
+        reg.newBiller = biller.toJSON();
+        cb(null, reg);
+      });
+
+    },
+    function(reg, cb){
+      var vars = {
+            "groupMemberId": reg.memberId,
+            "event_id": values.eventId,
+            "groupUserId": reg.userId,
+            "confirmnum": reg.confirmNum
+          };
+      obj.models.CheckinGroupMembers.create(vars).success(function(groupMember) {
+        reg.newMember = groupMember.toJSON();
+        reg.regId = reg.event.badge_prefix + obj.pad(reg.newMember.id, 5);
+        cb(null, reg);
+      });
+    },
+    function(reg, cb){
+        var sql = "",
+            fvars,
+            vars = [],
+            processFields = function(field, pCb) {
+              if (typeof values[field.name] != "undefined") {
+                sql += "INSERT INTO member_field_values SET value = ?, event_id = ?, field_id = ?, member_id = ?; ";
+                if (field.values) {
+                    fValues = field.values.split("|");
+                    values[field.name] = fValues.indexOf(values[field.name]);
+                }
+                vars.push(values[field.name], values.eventId, field.local_id, reg.memberId);
+                sql += "INSERT INTO biller_field_values SET value = ?, event_id = ?, field_id = ?, user_id = ?; ";
+                if (field.values) {
+                    fValues = field.values.split("|");
+                    values[field.name] = fValues.indexOf(values[field.name]);
+                }
+                vars.push(values[field.name], values.eventId, field.local_id, reg.userId);
+                //console.log(values.fields[field.name], values.event_id, field.local_id, values.local_id);
+                pCb(null);
+              } else {
+                pCb(null);
+              }
+            };
+        async.each(reg.fields, processFields, function(err) {
+          if (vars.length) {
+            obj.db.checkin
+            .query(
+              sql, null,
+              { raw: true }, vars
+            )
+            .success(function(insertResults) {
+              cb(null, reg);
+            });
+          } else {
+            cb(null, reg);
+          }
+        });
+      }
+  ], function (err, result) {
+    //console.log(result);
+    obj.searchAttendees(["registrantid"], result.regId, 0, 20, false, retCallback);
   });
 };
 

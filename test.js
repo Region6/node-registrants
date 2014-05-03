@@ -5,13 +5,14 @@ var Registrants = require("./index"),
       "username": "checkin",
       "password": "XURpHFj4XWb3CwEz",
       "database": "checkin",
-      "port": 3306
+      "port": 3306,
+      "logging": true
     });
 
-
+/*
 registrants.getAttendee('E00019', function(reg) {
     console.log(reg);
-    /**
+
     var values = {
       event_id: '84a8873a-92d5-11e3-a3e0-2b963df5580f',
       local_id: 1,
@@ -24,9 +25,9 @@ registrants.getAttendee('E00019', function(reg) {
     registrants.updateExhibitorAttendee(1, values, function(reg) {
         console.log(reg);
     });
-    **/
-});
 
+});
+*/
 /**
 registrants.getRange(1, 50, 'S', function(reg) {
   console.log(reg);
@@ -48,3 +49,14 @@ registrants.getCheckedInCount(function(count) {
    console.log(count);
 });
 **/
+
+registrants.initRegistrant(
+    {
+        eventId: "9124cf3e-d009-11e3-be0e-c3660b93c830",
+        slabId: 2
+    },
+    function(reg) {
+        console.log(reg);
+    }
+);
+

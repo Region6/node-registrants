@@ -482,8 +482,7 @@ Registrants.prototype.getExhibitorAttendee = function(regId, options, callback){
               "zip",
               "phone",
               "email"
-            ],
-            badgeSchema: exhFields
+            ]
           }
         );
         callback(attendee);
@@ -635,6 +634,7 @@ Registrants.prototype.createExhibitorModel = function(attendee, options, cb) {
       }
     },
     function(attendee, callback) {
+      attendee.badgeSchema = exhFields;
       async.each(
         attendee.badgeSchema,
         function(field, callback) {

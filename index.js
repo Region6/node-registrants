@@ -1386,6 +1386,130 @@ Registrants.prototype.initRegistrant = function(values, callback) {
   });
 };
 
+Registrants.prototype.saveCheckTransaction = function(values, callback) {
+  var obj = this,
+      transAction = values.transaction;
+  async.waterfall([
+    function(cb){
+      obj.models.CheckinBiller
+      .find({
+        where: {
+          eventId: values.registrant.event_id,
+          userId: values.registrant.biller_id
+        }
+      })
+      .success(function(biller) {
+        var attr = {
+              transaction_id: values.transaction.payment.checkNumber
+            };
+        biller.updateAttributes(attr).success(function(biller) {
+          cb(null, {biller: biller});
+        });
+      });
+    },
+    function(results, cb) {
+      obj.models.CheckinEventFees
+      .find({
+        where: {
+          event_id: values.registrant.event_id,
+          user_id: values.registrant.biller_id
+        }
+      })
+      .success(function(fees) {
+        results.fees = fees;
+        cb(null, results);
+      });
+    },
+    function(results, cb) {
+      var vals = {
+            basefee: transAction.amount,
+            fee: transAction.amount,
+            paid_amount: transAction.amount,
+            status: 1,
+            payment_method: "2"
+          };
+      if (results.fees) {
+        results.fees.updateAttributes(vals).success(function(fees) {
+          results.fees = fees;
+          cb(null, results);
+        });
+      } else {
+        vals = underscore.extend(vals, {event_id: values.registrant.event_id, user_id: values.registrant.biller_id});
+        obj.models.CheckinEventFees
+        .create(vals)
+        .success(function(fees) {
+          results.fees = fees;
+          cb(null, results);
+        });
+      }
+    }
+  ], function (err, results) {
+    callback(results);
+  });
+};
+
+Registrants.prototype.saveCreditTransaction = function(values, callback) {
+  var obj = this,
+      transAction = values.transaction;
+  async.waterfall([
+    function(cb){
+      obj.models.CheckinBiller
+      .find({
+        where: {
+          eventId: values.registrant.event_id,
+          userId: values.registrant.biller_id
+        }
+      })
+      .success(function(biller) {
+        var attr = {
+              transaction_id: values.transaction.payment.checkNumber
+            };
+        biller.updateAttributes(attr).success(function(biller) {
+          cb(null, {biller: biller});
+        });
+      });
+    },
+    function(results, cb) {
+      obj.models.CheckinEventFees
+      .find({
+        where: {
+          event_id: values.registrant.event_id,
+          user_id: values.registrant.biller_id
+        }
+      })
+      .success(function(fees) {
+        results.fees = fees;
+        cb(null, results);
+      });
+    },
+    function(results, cb) {
+      var vals = {
+            basefee: transAction.amount,
+            fee: transAction.amount,
+            paid_amount: transAction.amount,
+            status: 1,
+            payment_method: "authorizenet"
+          };
+      if (results.fees) {
+        results.fees.updateAttributes(vals).success(function(fees) {
+          results.fees = fees;
+          cb(null, results);
+        });
+      } else {
+        vals = underscore.extend(vals, {event_id: values.registrant.event_id, user_id: values.registrant.biller_id});
+        obj.models.CheckinEventFees
+        .create(vals)
+        .success(function(fees) {
+          results.fees = fees;
+          cb(null, results);
+        });
+      }
+    }
+  ], function (err, results) {
+    callback(results);
+  });
+};
+
 Registrants.prototype.pad = function(num, size) {
   var s = num+"";
   while (s.length < size) s = "0" + s;

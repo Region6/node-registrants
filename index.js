@@ -1510,6 +1510,47 @@ Registrants.prototype.saveCreditTransaction = function(values, callback) {
   });
 };
 
+Registrants.prototype.saveAuthorizeNetTransaction = function(data, callback) {
+  var vars = underscore.clone(data.transaction);
+  delete vars.batch;
+  delete vars.payment;
+  delete vars.order;
+  delete vars.billTo;
+  delete vars.shipTo;
+  delete vars.recurringBilling;
+  delete vars.customer;
+  delete vars.customerIP;
+  vars = underscore.extend(vars, data.transaction.batch);
+  vars = underscore.extend(vars, data.transaction.order);
+  vars = underscore.extend(vars, data.transaction.payment.creditCard);
+  vars = underscore.extend(vars, data.transaction.customer);
+  vars = underscore.extend(vars, {
+    billToFirstName: data.transaction.billTo.firstName,
+    billToLastName: data.transaction.billTo.lastName,
+    billToAdddatas: data.transaction.billTo.adddatas,
+    billToCity: data.transaction.billTo.city,
+    billToState: data.transaction.billTo.state,
+    billToZip: data.transaction.billTo.zip,
+    billToPhoneNumber: data.transaction.billTo.phoneNumber
+  });
+  if ("shipTo" in data.transaction) {
+    vars = underscore.extend(vars, {
+      shipToFirstName: data.transaction.shipTo.firstName,
+      shipToLastName: data.transaction.shipTo.lastName,
+      shipToAdddatas: data.transaction.shipTo.adddatas,
+      shipToCity: data.transaction.shipTo.city,
+      shipToState: data.transaction.shipTo.state,
+      shipToZip: data.transaction.shipTo.zip
+    });
+  }
+
+  this.models.Transactions
+  .create(vars)
+  .success(function(trans) {
+    callback({db: trans, credit: data});
+  });
+};
+
 Registrants.prototype.pad = function(num, size) {
   var s = num+"";
   while (s.length < size) s = "0" + s;

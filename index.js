@@ -572,7 +572,7 @@ Registrants.prototype.createRegistrantModel = function(attendee, options, cb) {
       async.each(
         attendee.badgeSchema,
         function(field, callback) {
-          attendee[field.class] = attendee[field.id] || "";
+          attendee[field.class] = attendee.fields[field.id] || "";
           callback(null);
         },
         function(err) {

@@ -1175,7 +1175,7 @@ Registrants.prototype.searchAttendees = function(fields, search, page, limit, ex
           sql += "event_fields.class = ?";
           vars.push(field);
         });
-        sql += ")) UNION (";
+        sql += ")) UNION ";
         sql += "(SELECT group_members.id, 'G' as type, biller.register_date  "+
             "FROM event_fields   "+
             "LEFT JOIN biller_field_values ON (event_fields.local_id = biller_field_values.field_id AND event_fields.event_id = biller_field_values.event_id)  "+

@@ -1265,9 +1265,9 @@ Registrants.prototype.initRegistrant = function(values, callback) {
         callback(registrants);
       },
       obj = this,
-      u = Date(),
+      u = new Date(),
       randomUserId  = u.getDate().toString() + u.getHours().toString() + u.getMinutes().toString() + u.getSeconds().toString() + u.getMilliseconds().toString(),
-      m = Date(),
+      m = new Date(),
       randomMemberId = m.getDate().toString() + m.getHours().toString() + m.getMinutes().toString() + m.getSeconds().toString() + m.getMilliseconds().toString();
 
   async.waterfall([

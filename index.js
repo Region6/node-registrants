@@ -1264,7 +1264,11 @@ Registrants.prototype.initRegistrant = function(values, callback) {
   var retCallback = function(registrants) {
         callback(registrants);
       },
-      obj = this;
+      obj = this,
+      u = Date(),
+      randomUserId  = u.getDate().toString() + u.getHours().toString() + u.getMinutes().toString() + u.getSeconds().toString() + u.getMilliseconds().toString(),
+      m = Date(),
+      randomMemberId = m.getDate().toString() + m.getHours().toString() + m.getMinutes().toString() + m.getSeconds().toString() + m.getMilliseconds().toString();
 
   async.waterfall([
     function(cb){
@@ -1277,7 +1281,7 @@ Registrants.prototype.initRegistrant = function(values, callback) {
       }).success(function(biller) {
         var reg = {};
         reg.biller = biller.toJSON();
-        reg.userId = parseInt(biller.userId,10) + 1;
+        reg.userId = randomUserId;
         cb(null, reg);
       });
     },
@@ -1306,13 +1310,13 @@ Registrants.prototype.initRegistrant = function(values, callback) {
         limit: 1
       }).success(function(lastMember) {
         reg.lastMember = lastMember.toJSON();
-        reg.memberId = parseInt(lastMember.groupMemberId,10) + 1,
+        reg.memberId = randomId,
         cb(null, reg);
       });
     },
     function(reg, cb){
       obj.getEvent({eventId: values.eventId}, function(event) {
-        reg.confirmNum = event.confirm_number_prefix+(parseInt(reg.lastMember.confirmnum.split("-")[1])+1);
+        reg.confirmNum = event.confirm_number_prefix+randomId;
         reg.event = event;
         cb(null, reg);
       });

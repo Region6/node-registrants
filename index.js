@@ -1310,7 +1310,7 @@ Registrants.prototype.initRegistrant = function(values, callback) {
         limit: 1
       }).success(function(lastMember) {
         reg.lastMember = lastMember.toJSON();
-        reg.memberId = randomId,
+        reg.memberId = randomMemberId,
         cb(null, reg);
       });
     },

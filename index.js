@@ -163,15 +163,15 @@ Registrants.prototype.initialize = function(options) {
     local_id:             { type: Sequelize.INTEGER },
     event_id:             { type: Sequelize.STRING(36) },
     field_id:             { type: Sequelize.INTEGER },
-    member_id:            { type: Sequelize.INTEGER },
+    member_id:            { type: Sequelize.STRING(255) },
     value:                { type: Sequelize.TEXT }
   });
 
   this.models.CheckinGroupMembers = this.db.checkin.define('group_members', {
     id:                   { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-    groupMemberId :       { type: Sequelize.INTEGER },
+    groupMemberId :       { type: Sequelize.STRING(255) },
     event_id :            { type: Sequelize.STRING(36) },
-    groupUserId :         { type: Sequelize.INTEGER },
+    groupUserId :         { type: Sequelize.STRING(255) },
     created :             { type: Sequelize.DATE },
     confirmnum :          { type: Sequelize.STRING(100) },
     attend:               { type: Sequelize.BOOLEAN },
@@ -236,7 +236,7 @@ Registrants.prototype.initialize = function(options) {
 
   this.models.CheckinBiller = this.db.checkin.define('biller', {
     id:                   { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-    userId :              { type: Sequelize.INTEGER },
+    userId :              { type: Sequelize.STRING(255) },
     eventId :             { type: Sequelize.STRING(36) },
     local_eventId :       { type: Sequelize.INTEGER },
     type :                { type: Sequelize.ENUM('I','G') },
@@ -245,7 +245,7 @@ Registrants.prototype.initialize = function(options) {
     due_amount :          { type: Sequelize.DECIMAL(10,2) },
     pay_later_option:     { type: Sequelize.INTEGER },
     confirmNum :          { type: Sequelize.STRING(50) },
-    user_id :             { type: Sequelize.INTEGER },
+    user_id :             { type: Sequelize.STRING(255) },
     payment_verified :    { type: Sequelize.INTEGER },
     pay_later_paid:       { type: Sequelize.INTEGER },
     discount_code_id :    { type: Sequelize.INTEGER },
@@ -292,7 +292,7 @@ Registrants.prototype.initialize = function(options) {
     local_id :            { type: Sequelize.INTEGER },
     event_id :            { type: Sequelize.STRING(36) },
     field_id :            { type: Sequelize.INTEGER },
-    user_id :             { type: Sequelize.INTEGER },
+    user_id :             { type: Sequelize.STRING(255) },
     value :               { type: Sequelize.TEXT }
   });
 
@@ -371,7 +371,7 @@ Registrants.prototype.initialize = function(options) {
 
   this.models.Transactions = this.db.checkin.define('transactions', {
     id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-    transId : { type: Sequelize.INTEGER(11) },
+    transId : { type: Sequelize.STRING(255) },
     submitTimeUTC : { type: Sequelize.DATE },
     submitTimeLocal : { type: Sequelize.DATE },
     transactionType : { type: Sequelize.STRING(255) },

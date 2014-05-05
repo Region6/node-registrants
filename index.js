@@ -269,7 +269,7 @@ Registrants.prototype.initialize = function(options) {
     id:                   { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
     local_id :            { type: Sequelize.INTEGER },
     event_id :            { type: Sequelize.STRING(36) },
-    user_id :             { type: Sequelize.INTEGER },
+    user_id :             { type: Sequelize.STRING(255) },
     basefee :             { type: Sequelize.STRING(20) },
     memberdiscount :      { type: Sequelize.STRING(12) },
     latefee :             { type: Sequelize.STRING(12) },

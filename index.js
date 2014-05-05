@@ -978,7 +978,7 @@ Registrants.prototype.updateRegistrantValues = function(regId, values, callback)
   this.models.CheckinMemberFieldValues.destroy(
     {
       event_id: values.event_id,
-      member_id: values.local_id
+      member_id: values.groupMemberId
     }
   )
   .success(function(affectedRows) {
@@ -997,7 +997,7 @@ Registrants.prototype.updateRegistrantValues = function(regId, values, callback)
                 value: values.fields[field.name],
                 event_id: values.event_id,
                 field_id: field.local_id,
-                member_id: values.local_id
+                member_id: values.groupMemberId
               };
               if (field.values && (field.type == 4 || field.type == 1)) {
                   var fValues = field.values.split("|");
@@ -1014,7 +1014,7 @@ Registrants.prototype.updateRegistrantValues = function(regId, values, callback)
         obj.models.CheckinMemberFieldValues.bulkCreate(records).success(function(results) {
           var recs = {
                 event_id: values.event_id,
-                groupMemberId: values.local_id
+                groupMemberId: values.groupMemberId
               },
               createRecord = function(field, cb) {
                 if (typeof values.fields[field.name] != "undefined") {
@@ -1026,7 +1026,7 @@ Registrants.prototype.updateRegistrantValues = function(regId, values, callback)
             obj.models.CheckinGroupMembers.find({
               where: {
                 event_id: values.event_id,
-                groupMemberId: values.memberId
+                groupMemberId: values.groupMemberId
               }
             }).success(function(member) {
               member.updateAttributes(recs).success(function(update) {

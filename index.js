@@ -502,7 +502,8 @@ Registrants.prototype.createRegistrantModel = function(attendee, options, cb) {
     function(callback) {
       obj.getRegistrantFieldValues(attendee, function(values) {
         attendee = underscore.extend(attendee, values);
-        attendee.fields = values;
+        var vals = obj.shallowCopy(values);
+        attendee.fields = vals;
         callback(null, attendee);
       });
     },
@@ -532,9 +533,11 @@ Registrants.prototype.createRegistrantModel = function(attendee, options, cb) {
     },
     function(attendee, callback) {
       obj.getBillerFieldValues(attendee, function(values) {
-        var fieldVals = obj.shallowCopy(values);
-        attendee = underscore.extend(fieldVals, attendee);
-        attendee.fields = underscore.extend(fieldVals, attendee.fields);
+        var fieldVals = obj.shallowCopy(values),
+            attendeeFields = obj.shallowCopy(attendee.fields);
+        //attendee = underscore.extend(fieldVals, attendee);
+        //attendee.fields = {};
+        attendee.fields = underscore.extend(fieldVals, attendeeFields);
         attendee.biller = underscore.extend(attendee.biller, values);
         callback(null, attendee);
       });

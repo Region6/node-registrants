@@ -534,6 +534,7 @@ Registrants.prototype.createRegistrantModel = function(attendee, options, cb) {
       obj.getBillerFieldValues(attendee, function(values) {
         var fieldVals = obj.shallowCopy(values);
         attendee = underscore.extend(fieldVals, attendee);
+        attendee.fields = underscore.extend(fieldVals, attendee.fields);
         attendee.biller = underscore.extend(attendee.biller, values);
         callback(null, attendee);
       });

@@ -1181,10 +1181,11 @@ Registrants.prototype.searchAttendees = function(fields, search, page, limit, ex
               "LEFT JOIN biller ON (exhibitorAttendees.userId = biller.userID AND exhibitorAttendees.eventId = biller.eventId) "+
               "WHERE biller.status != -1 AND (";
         fields.forEach(function(field, index) {
+          var exField = underscore.findWhere(exhFields, {class: field});
           if (index > 0) {
               sql += " OR ";
           }
-          sql += "exhibitorAttendees."+field+" LIKE ?";
+          sql += "exhibitorAttendees."+exhField.id+" LIKE ?";
           vars.push("%"+search+"%");
         });
         sql += "))";

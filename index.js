@@ -1184,7 +1184,7 @@ Registrants.prototype.searchAttendees = function(fields, search, page, limit, ex
           if (index > 0) {
               sql += " OR ";
           }
-          field = (field == "company") "organization" : field;
+          field = (field == "company") ? "organization" : field;
           sql += "exhibitorAttendees."+field+" LIKE ?";
           vars.push("%"+search+"%");
         });

@@ -1316,7 +1316,7 @@ Registrants.prototype.initRegistrant = function(values, callback) {
     },
     function(reg, cb){
       obj.getEvent({eventId: values.eventId}, function(event) {
-        reg.confirmNum = event.confirm_number_prefix+randomId;
+        reg.confirmNum = event.confirm_number_prefix+randomMemberId;
         reg.event = event;
         cb(null, reg);
       });

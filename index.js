@@ -1176,6 +1176,21 @@ Registrants.prototype.searchAttendees = function(fields, search, page, limit, ex
           vars.push(field);
         });
         sql += ")) UNION (";
+        sql += "(SELECT group_members.id, 'G' as type, biller.register_date  "+
+            "FROM event_fields   "+
+            "LEFT JOIN biller_field_values ON (event_fields.local_id = biller_field_values.field_id AND event_fields.event_id = biller_field_values.event_id)  "+
+            "LEFT JOIN biller ON (biller_field_values.user_id = biller.userID AND event_fields.event_id = biller.eventId)  "+
+            "LEFT JOIN group_members ON (biller.userId = group_members.groupUserId  AND event_fields.event_id = group_members.event_id) "+
+            "WHERE biller.status != -1 AND biller_field_values.value LIKE ? AND (";
+        vars.push("%"+search+"%");
+        fields.forEach(function(field, index) {
+          if (index > 0) {
+              sql += " OR ";
+          }
+          sql += "event_fields.class = ?";
+          vars.push(field);
+        });
+        sql += ")) UNION (";
         sql += "SELECT exhibitorAttendees.id, 'E' as type, biller.register_date "+
               "FROM exhibitorAttendees "+
               "LEFT JOIN biller ON (exhibitorAttendees.userId = biller.userID AND exhibitorAttendees.eventId = biller.eventId) "+

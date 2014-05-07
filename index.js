@@ -707,11 +707,15 @@ Registrants.prototype.getBiller = function(attendee, callback) {
       eventId: attendee.eventId
     }
   }).success(function(biller) {
-    biller = biller.toJSON();
-    obj.getRegistrantFields(biller, function(fields) {
-      biller = underscore.extend(biller, fields);
-      callback(biller);
-    });
+    if (biller) {
+      biller = biller.toJSON();
+      obj.getRegistrantFields(biller, function(fields) {
+        biller = underscore.extend(biller, fields);
+        callback(biller);
+      });
+    } else {
+      callback({});
+    }
   });
 };
 

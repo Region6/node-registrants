@@ -1280,6 +1280,61 @@ Registrants.prototype.getCheckedInCount = function(callback) {
   });
 };
 
+Registrants.prototype.getAllCheckedInAttendees = function(callback) {
+  var obj = this;
+
+  async.waterfall([
+    function(cb) {
+      obj.models.CheckinGroupMembers
+      .findAll({
+         where: ["attend = 1"]
+      })
+      .success(function(results) {
+        var regs = [],
+            getReg = function(item, cb) {
+              var regId = "G" + obj.pad(item.id, 5);
+              returnCb = function(registrant) {
+                if (!underscore.isEmpty(registrant)) {
+                  regs.push(registrant);
+                }
+                cb();
+              }
+              obj.getAttendee(regId, returnCb);
+            };
+
+        async.each(results, getReg, function(err){
+          cb(null, regs);
+        });
+      });
+    },
+    function(attendees, cb) {
+      obj.models.CheckinExhibitorAttendees
+      .findAll({
+         where: ["attend = 1"]
+      })
+      .success(function(results) {
+        var regs = [],
+            getReg = function(item, cb) {
+              var regId = "E" + obj.pad(item.id, 5);
+              returnCb = function(registrant) {
+                if (!underscore.isEmpty(registrant)) {
+                  regs.push(registrant);
+                }
+                cb();
+              }
+              obj.getAttendee(regId, returnCb);
+            };
+
+        async.each(results, getReg, function(err){
+          cb(null, attendees.concat(regs));
+        });
+      });
+    }
+  ],function(err, attendees) {
+    callback(attendees);
+  });
+};
+
 Registrants.prototype.initRegistrant = function(values, callback) {
   var retCallback = function(registrants) {
         callback(registrants);

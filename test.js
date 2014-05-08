@@ -65,13 +65,19 @@ registrants.initRegistrant(
 registrants.getRange(1, 50, 'S', function(reg) {
   console.log(reg);
 });
-**/
+
 registrants.searchAttendees(
 [],
  "",
  0,
  50,
  null,
+ function(registrants) {
+    console.log(registrants);
+});
+**/
+
+registrants.getAllCheckedInAttendees(
  function(registrants) {
     console.log(registrants);
 });

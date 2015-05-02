@@ -7,18 +7,210 @@ var fs = require('fs'),
     underscore = require('underscore'),
     Sequelize = require("sequelize"),
     exhFields = [
-      {label: "First Name", id: "firstname", class:"firstname"},
-      {label: "Last Name", id: "lastname", class:"lastname"},
-      {label: "Title", id: "title", class:"title"},
-      {label: "Site ID", id: "siteId", class:"siteid"},
-      {label: "Company", id: "organization", class:"company"},
-      {label: "Street 1", id: "address", class:"street1"},
-      {label: "Street 2", id: "address2", class:"street2"},
-      {label: "City", id: "city", class:"city"},
-      {label: "State", id: "state", class:"state"},
-      {label: "Zip", id: "zip", class:"zip"},
-      {label: "Phone", id: "phone", class:"phone"},
-      {label: "Email", id: "email", class:"email"}
+      {title: "First Name", id: "firstname", class:"firstname", type: "Text"},
+      {title: "Last Name", id: "lastname", class:"lastname", type: "Text"},
+      {title: "Title", id: "title", class:"title", type: "Text"},
+      {title: "Site ID", id: "siteId", class:"siteid", type: "Text"},
+      {title: "Company", id: "organization", class:"company", type: "Text"},
+      {title: "Street 1", id: "address", class:"street1", type: "Text"},
+      {title: "Street 2", id: "address2", class:"street2", type: "Text"},
+      {title: "City", id: "city", class:"city", type: "Text"},
+      {
+        title: "State", 
+        id: "state", 
+        class:"state", 
+        type: "Select",
+        options: [
+          "Alabama",
+          "Alaska",
+          "Arizona",
+          "Arkansas",
+          "California",
+          "Colorado",
+          "Connecticut",
+          "District of Columbia",
+          "Delaware",
+          "Florida",
+          "Georgia",
+          "Hawaii",
+          "Idaho",
+          "Illinois",
+          "Indiana",
+          "Iowa",
+          "Kansas",
+          "Kentucky",
+          "Louisiana",
+          "Maine",
+          "Maryland",
+          "Massachusetts",
+          "Michigan",
+          "Minnesota",
+          "Mississippi",
+          "Missouri",
+          "Montana",
+          "Nebraska",
+          "Nevada",
+          "New Hampshire",
+          "New Jersey",
+          "New Mexico",
+          "New York",
+          "North Carolina",
+          "North Dakota",
+          "Ohio",
+          "Oklahoma",
+          "Oregon",
+          "Pennsylvania",
+          "Rhode Island",
+          "South Carolina",
+          "South Dakota",
+          "Tennessee",
+          "Texas",
+          "Utah",
+          "Vermont",
+          "Virginia",
+          "Washington",
+          "West Virginia",
+          "Wisconsin",
+          "Wyoming",
+          "American Samoa",
+          "Guam",
+          "Northern Mariana Islands",
+          "Puerto Rico",
+          "United States Minor Outlying Islands",
+          "Virgin Islands",
+          "Alberta",
+          "British Columbia",
+          "Manitoba",
+          "New Brunswick",
+          "Newfoundland and Labrador",
+          "Nova Scotia",
+          "Nunavut",
+          "Northwest Territories",
+          "Ontario",
+          "Prince Edward Island",
+          "Quebec",
+          "Saskatchewen",
+          "Yukon"
+        ]
+      },
+      {title: "Zip", id: "zip", class:"zip", type: "Text"},
+      {title: "Phone", id: "phone", class:"phone", type: "Text"},
+      {title: "Email", id: "email", class:"email", type: "Text"}
+    ],
+    exhBillerFields = [
+      {id: "firstname", class:"firstname"},
+      {id: "lastname", class:"lastname"},
+      {id: "organization", class:"bcompany"},
+      {id: "address", class:"baddress1"},
+      {id: "address2", class:"baddress2"},
+      {id: "city", class:"bcity"},
+      {id: "state", class:"bstate"},
+      {id: "zip", class:"bzip"},
+      {id: "phone", class:"phone"},
+      {id: "email", class:"email"}
+    ],
+    onsiteFields = [
+      {title: "First Name", id: "firstname", class:"firstname", type: "Text"},
+      {title: "Last Name", id: "lastname", class:"lastname", type: "Text"},
+      {title: "Title", id: "title", class:"title", type: "Text"},
+      {title: "Site ID", id: "siteId", class:"siteid", type: "Text"},
+      {title: "Company", id: "organization", class:"company", type: "Text"},
+      {title: "Street 1", id: "address", class:"street1", type: "Text"},
+      {title: "Street 2", id: "address2", class:"street2", type: "Text"},
+      {title: "City", id: "city", class:"city", type: "Text"},
+      {
+        title: "State", 
+        id: "state", 
+        class:"state", 
+        type: "Select",
+        options: [
+          "Alabama",
+          "Alaska",
+          "Arizona",
+          "Arkansas",
+          "California",
+          "Colorado",
+          "Connecticut",
+          "District of Columbia",
+          "Delaware",
+          "Florida",
+          "Georgia",
+          "Hawaii",
+          "Idaho",
+          "Illinois",
+          "Indiana",
+          "Iowa",
+          "Kansas",
+          "Kentucky",
+          "Louisiana",
+          "Maine",
+          "Maryland",
+          "Massachusetts",
+          "Michigan",
+          "Minnesota",
+          "Mississippi",
+          "Missouri",
+          "Montana",
+          "Nebraska",
+          "Nevada",
+          "New Hampshire",
+          "New Jersey",
+          "New Mexico",
+          "New York",
+          "North Carolina",
+          "North Dakota",
+          "Ohio",
+          "Oklahoma",
+          "Oregon",
+          "Pennsylvania",
+          "Rhode Island",
+          "South Carolina",
+          "South Dakota",
+          "Tennessee",
+          "Texas",
+          "Utah",
+          "Vermont",
+          "Virginia",
+          "Washington",
+          "West Virginia",
+          "Wisconsin",
+          "Wyoming",
+          "American Samoa",
+          "Guam",
+          "Northern Mariana Islands",
+          "Puerto Rico",
+          "United States Minor Outlying Islands",
+          "Virgin Islands",
+          "Alberta",
+          "British Columbia",
+          "Manitoba",
+          "New Brunswick",
+          "Newfoundland and Labrador",
+          "Nova Scotia",
+          "Nunavut",
+          "Northwest Territories",
+          "Ontario",
+          "Prince Edward Island",
+          "Quebec",
+          "Saskatchewen",
+          "Yukon"
+        ]
+      },
+      {title: "Zip", id: "zip", class:"zip", type: "Text"},
+      {title: "Phone", id: "phone", class:"phone", type: "Text"},
+      {title: "Email", id: "email", class:"email", type: "Text"}
+    ],
+    onsiteBillerFields = [
+      {id: "firstname", class:"firstname"},
+      {id: "lastname", class:"lastname"},
+      {id: "organization", class:"bcompany"},
+      {id: "address", class:"baddress1"},
+      {id: "address2", class:"baddress2"},
+      {id: "city", class:"bcity"},
+      {id: "state", class:"bstate"},
+      {id: "zip", class:"bzip"},
+      {id: "phone", class:"phone"},
+      {id: "email", class:"email"}
     ],
     types = ['Text','Select','TextArea','Checkbox','Select','Text','Text','Text','Text'];
 
@@ -353,6 +545,28 @@ Registrants.prototype.initialize = function(options) {
     attend:               { type: Sequelize.BOOLEAN },
     checked_in_time :     { type: Sequelize.DATE }
   });
+  
+  this.models.OnsiteAttendees = this.db.checkin.define('onsiteAttendees', {
+    id:                   { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+    confirmation :        { type: Sequelize.STRING(255) },
+    eventId :             { type: Sequelize.STRING(36) },
+    firstname :           { type: Sequelize.STRING(255) },
+    lastname :            { type: Sequelize.STRING(255) },
+    address :             { type: Sequelize.STRING(255) },
+    address2 :            { type: Sequelize.STRING(255) },
+    city :                { type: Sequelize.STRING(255) },
+    state :               { type: Sequelize.STRING(255) },
+    zip :                 { type: Sequelize.STRING(15) },
+    email :               { type: Sequelize.STRING(255) },
+    phone :               { type: Sequelize.STRING(25) },
+    title :               { type: Sequelize.STRING(255) },
+    organization :        { type: Sequelize.STRING(255) },
+    created :             { type: Sequelize.DATE },
+    updated :             { type: Sequelize.DATE },
+    siteId :              { type: Sequelize.STRING(10) },
+    attend:               { type: Sequelize.BOOLEAN },
+    checked_in_time :     { type: Sequelize.DATE }
+  });
 
   this.models.Sites = this.db.checkin.define('siteIds', {
     id:                   { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
@@ -424,42 +638,72 @@ Registrants.prototype.getAttendee = function(registrantId, callback){
     this.getExhibitorAttendee(regId, {}, returnCb);
   } else {
     //console.log("Get General Attendee");
-    this.getRegistrant(regId, {}, returnCb);
+    this.getRegistrant(regId, regType, {}, returnCb);
   }
 };
 
-Registrants.prototype.getRegistrant = function(regId, options, callback){
+Registrants.prototype.getRegistrant = function(regId, regType, options, callback){
+  regType = regType || "G";
   var obj = this;
-  this.models.CheckinGroupMembers
-  .find(regId)
-  .success(function(member) {
-    if (member !== null) {
-      obj.createRegistrantModel(member.toJSON(), options, function(attendee) {
-        attendee = underscore.extend(
-          attendee,
-          {
-            local_id: attendee.userId,
-            event_id: attendee.eventId,
-            registrantId: attendee.event.badge_prefix + obj.pad(attendee.id, 5),
-            displayId: attendee.event.badge_prefix + "-" + attendee.id,
-            confirmation: attendee.confirmnum,
-            badge_prefix: attendee.event.badge_prefix,
-            biller_id: attendee.biller.userId
-          }
-        );
-        callback(attendee);
-      });
-    } else {
-      callback({});
-    }
-  })
+  console.log("Get Registrant", regId, regType);
+  if (regType === "Z") {
+     this.models.OnsiteAttendees
+    .find(regId)
+    .then(function(member) {
+      if (member !== null) {
+        obj.createOnsiteModel(member.toJSON(), options, function(attendee) {
+          attendee = underscore.extend(
+            attendee,
+            {
+              local_id: attendee.userId,
+              event_id: attendee.eventId,
+              registrantId: attendee.event.badge_prefix + obj.pad(attendee.id, 5),
+              paddedRegId: attendee.event.badge_prefix + obj.pad(attendee.id, 5),
+              displayId: attendee.event.badge_prefix + "-" + attendee.id,
+              confirmation: attendee.confirmnum,
+              badge_prefix: attendee.event.badge_prefix,
+              biller_id: attendee.biller.userId
+            }
+          );
+          callback(attendee);
+        });
+      } else  {
+        callback({});
+      }
+    });
+  } else {
+   this.models.CheckinGroupMembers
+    .find(regId)
+    .then(function(member) {
+      if (member !== null) {
+        obj.createRegistrantModel(member.toJSON(), options, function(attendee) {
+          attendee = underscore.extend(
+            attendee,
+            {
+              local_id: attendee.userId,
+              event_id: attendee.eventId,
+              registrantId: attendee.event.badge_prefix + obj.pad(attendee.id, 5),
+              paddedRegId: attendee.event.badge_prefix + obj.pad(attendee.id, 5),
+              displayId: attendee.event.badge_prefix + "-" + attendee.id,
+              confirmation: attendee.confirmnum,
+              badge_prefix: attendee.event.badge_prefix,
+              biller_id: attendee.biller.userId
+            }
+          );
+          callback(attendee);
+        });
+      } else  {
+        callback({});
+      }
+    });
+  }
 };
 
 Registrants.prototype.getExhibitorAttendee = function(regId, options, callback){
   var obj = this;
   this.models.CheckinExhibitorAttendees
   .find(regId)
-  .success(function(member) {
+  .then(function(member) {
     if (member !== null) {
       obj.createExhibitorModel(member.toJSON(), options, function(attendee) {
         attendee = underscore.extend(
@@ -468,6 +712,7 @@ Registrants.prototype.getExhibitorAttendee = function(regId, options, callback){
             local_id: attendee.userId,
             event_id: attendee.eventId,
             registrantId: attendee.event.badge_prefix + obj.pad(attendee.id, 5),
+            paddedRegId: attendee.event.badge_prefix + obj.pad(attendee.id, 5),
             displayId: attendee.event.badge_prefix + "-" + attendee.id,
             confirmation: attendee.biller.confirmNum,
             badge_prefix: attendee.event.badge_prefix,
@@ -492,7 +737,7 @@ Registrants.prototype.getExhibitorAttendee = function(regId, options, callback){
     } else {
       callback({});
     }
-  })
+  });
 };
 
 Registrants.prototype.createRegistrantModel = function(attendee, options, cb) {
@@ -659,6 +904,86 @@ Registrants.prototype.createExhibitorModel = function(attendee, options, cb) {
   });
 };
 
+Registrants.prototype.createOnsiteModel = function(attendee, options, cb) {
+  var obj = this;
+  attendee.confirmNum = attendee.confirmation;
+  attendee.fields = this.shallowCopy(attendee);
+  attendee.badgeFields = [
+    "firstname",
+    "lastname",
+    "title",
+    "organization",
+    "address",
+    "address2",
+    "city",
+    "state",
+    "zip",
+    "phone",
+    "email"
+  ];
+  async.waterfall([
+    function(callback){
+      obj.getEvent(attendee, function(event) {
+        attendee.event = event;
+        callback(null, attendee);
+      });
+    },
+    function(attendee, callback){
+      obj.getExhibitorFields(attendee, function(fields) {
+        attendee = underscore.extend(attendee, fields);
+        callback(null, attendee);
+      });
+    },
+    function(attendee, callback) {
+      attendee.biller = {};
+      attendee.biller.userId = attendee.id;
+      attendee.biller.confirmNum = attendee.confirmation;
+      async.each(
+        onsiteBillerFields,
+        function(field, callback) {
+          attendee.biller[field.class] = attendee[field.id];
+          callback(null);
+        },
+        function(err) {
+          callback(null, attendee);
+        }
+      );
+    },
+    function(attendee, callback){
+      obj.getPayments(attendee, function(payments) {
+        attendee = underscore.extend(attendee, payments);
+        callback(null, attendee);
+      });
+    },
+    function(attendee, callback) {
+      obj.getCreditTrans(attendee, function(values) {
+        attendee.creditCardTrans = values;
+        callback(null, attendee);
+      });
+    },
+    function(attendee, callback) {
+      attendee.linked = [];
+      callback(null, attendee);
+    },
+    function(attendee, callback) {
+      attendee.badgeSchema = onsiteFields;
+      async.each(
+        attendee.badgeSchema,
+        function(field, callback) {
+          attendee[field.class] = attendee[field.id];
+          callback(null);
+        },
+        function(err) {
+          attendee.confirmation = attendee.confirmNum;
+          callback(null, attendee);
+        }
+      );
+    }
+  ],function(err, results) {
+      cb(results);
+  });
+};
+
 Registrants.prototype.getPayments = function(attendee, callback) {
   var paid = false;
   this.models.CheckinEventFees.findAll({
@@ -666,7 +991,7 @@ Registrants.prototype.getPayments = function(attendee, callback) {
       user_id: attendee.biller.userId,
       event_id: attendee.eventId
     }
-  }).success(function(payments) {
+  }).then(function(payments) {
 
     async.reduce(payments, [], function(payment, item, cb){
       var due = parseInt(item.due, 10);
@@ -688,7 +1013,7 @@ Registrants.prototype.getCreditTrans = function(attendee, callback) {
     where: {
       invoiceNumber: attendee.biller.confirmNum
     }
-  }).success(function(trans) {
+  }).then(function(trans) {
     async.reduce(trans, [], function(transactions, item, cb){
         transactions.push(item.toJSON());
         cb(null, transactions);
@@ -706,7 +1031,7 @@ Registrants.prototype.getBiller = function(attendee, callback) {
       userId: attendee.userId,
       eventId: attendee.eventId
     }
-  }).success(function(biller) {
+  }).then(function(biller) {
     if (biller) {
       biller = biller.toJSON();
       obj.getRegistrantFields(biller, function(fields) {
@@ -724,7 +1049,7 @@ Registrants.prototype.getEvent = function(attendee, callback) {
     where: {
       eventId: attendee.eventId
     }
-  }).success(function(event) {
+  }).then(function(event) {
     callback(event.toJSON());
   });
 };
@@ -747,37 +1072,34 @@ Registrants.prototype.getRegistrantFields = function(attendee, callback) {
         cback(null);
       };
 
-  this.models.CheckinEventFields.findAll({
-    where: {
-      event_id: attendee.eventId
-    },
-    order: "ordering ASC"
-  }).success(function(fields) {
-    async.eachSeries(fields, processFields, function(err){
-      callback({
-        schema: schema,
-        fieldset: fieldset
-      });
-    });
-  });
+  this.models.CheckinEventFields.findAll(
+    {
+      where: {
+        event_id: attendee.eventId
+      },
+      order: "ordering ASC"
+    }
+  ).then(
+    function(fields) {
+      async.eachSeries(
+        fields, 
+        processFields, 
+        function(err){
+          callback({
+            schema: schema,
+            fieldset: fieldset
+          });
+        }
+      );
+    }
+  );
 };
 
 Registrants.prototype.getExhibitorFields = function(attendee, callback) {
   var schema = {},
       fieldset = [],
       processFields = function (item, cback){
-        var schemaRow = {
-              "title": item.label,
-              "type": "Text"
-            };
-        /*
-        if (item.values && (item.type == 4 || item.type == 1)) {
-          var values = item.values.split("|");
-          values.unshift("");
-          schemaRow.options = values;
-        }
-        */
-        schema[item.id] = schemaRow;
+        schema[item.id] = item;
         fieldset.push(item.id);
         cback(null);
       };
@@ -801,60 +1123,81 @@ Registrants.prototype.getBillerFieldValues = function(attendee, cb) {
             "    ) "+
             "WHERE biller_field_values.user_id = :userId "+
             "      AND biller_field_values.event_id = :eventId";
-
+  
   this.db.checkin.query(
-    sql, null,
-    { raw: true },
+    sql,
     {
-      userId: attendee.userId,
-      eventId: attendee.eventId
+      replacements: {
+        userId: attendee.userId,
+        eventId: attendee.eventId
+      },
+      type: Sequelize.QueryTypes.SELECT
     }
-  ).success(function(fieldValues) {
-    var convertToJson = function(item, cback) {
-          var field = {
-                "label":item.name,
-                "value": item.value
-              };
-          if ( item.type == 1 || item.type == 3 || item.type == 4 ) {
-            var ar = item.values.split("|");
-            field.value = ar[item.value];
-          }
-          cback(null, field);
-        };
-    async.map(fieldValues, convertToJson, function(err, results){
-      async.reduce(results, {}, function(fields, item, callback){
-          fields[item.label] = item.value;
-          callback(null, fields);
-      }, function(err, result){
-          cb(result);
-      });
+  ).then(
+    function(fieldValues) {
+      var convertToJson = function(item, cback) {
+            var field = {
+                  "label":item.name,
+                  "value": item.value
+                };
+            if ( item.type == 1 || item.type == 3 || item.type == 4 ) {
+              var ar = item.values.split("|");
+              field.value = ar[item.value];
+            }
+            cback(null, field);
+          };
+      async.map(fieldValues, convertToJson, function(err, results){
+        async.reduce(results, {}, function(fields, item, callback){
+            fields[item.label] = item.value;
+            if (attendee.event.reg_type === "E") { 
+              console.log(item.label);
+              var clas = underscore.where(exhBillerFields, {id: item.label});
+              if (clas.length > 0) {
+                fields[clas[0].class] = item.value;
+              }
+            } 
+            callback(null, fields);
+        }, function(err, result){
+            cb(result);
+        });
 
-    });
-  });
+      });
+    }
+  );
 };
 
 Registrants.prototype.getRegistrantBadgeFields = function(attendee, cb) {
   var schema = [];
-  this.models.CheckinEventFields.findAll({
-    where: {
-      badge_order: { gt: 0 },
-      event_id: attendee.eventId
-    },
-    order: [
-      ['badge_order', 'ASC'],
-    ]
-  }).success(function(results) {
-    async.reduce(results, [], function(fields, item, callback) {
-      schema.push({class: item.class, id: item.name});
-      fields.push(item.name);
-      callback(null, fields);
-    }, function(err, result){
-      cb({
-        badgeSchema: schema,
-        badgeFields: result
-      });
-    });
-  });
+  this.models.CheckinEventFields.findAll(
+    {
+      where: {
+        badge_order: { gt: 0 },
+        event_id: attendee.eventId
+      },
+      order: [
+        ['badge_order', 'ASC'],
+      ]
+    }
+  ).then(
+    function(results) {
+      async.reduce(
+        results, 
+        [], 
+        function(fields, item, callback) {
+          item.name;
+          schema.push({class: item.class, id: item.name});
+          fields.push(item.name);
+          callback(null, fields);
+        }, 
+        function(err, result){
+          cb({
+            badgeSchema: schema,
+            badgeFields: result
+          });
+        }
+      );
+    }
+  );
 };
 
 Registrants.prototype.getRegistrantFieldValues = function(attendee, cb) {
@@ -867,36 +1210,49 @@ Registrants.prototype.getRegistrantFieldValues = function(attendee, cb) {
             "    ) "+
             "WHERE member_field_values.member_id = :memberId "+
             "      AND member_field_values.event_id = :eventId";
-
+  
+  console.log(attendee);
   this.db.checkin.query(
-    sql, null,
-    { raw: true },
+    sql,
     {
-      memberId: attendee.memberId,
-      eventId: attendee.eventId
+      replacements: {
+        memberId: attendee.memberId,
+        eventId: attendee.eventId
+      },
+      type: Sequelize.QueryTypes.SELECT
     }
-  ).success(function(fieldValues) {
-    var convertToJson = function(item, cback) {
-          var field = {
-                "label":item.name,
-                "value": item.value
-              };
-          if ( item.type == 1 || item.type == 3 || item.type == 4 ) {
-            var ar = item.values.split("|");
-            field.value = ar[item.value];
-          }
-          cback(null, field);
-        };
-    async.map(fieldValues, convertToJson, function(err, results){
-      async.reduce(results, {}, function(fields, item, callback){
-          fields[item.label] = item.value;
-          callback(null, fields);
-      }, function(err, result){
-          cb(result);
-      });
-
-    });
-  });
+  ).then(
+    function(fieldValues) {
+      var convertToJson = function(item, cback) {
+            var field = {
+                  "label":item.name,
+                  "value": item.value
+                };
+            if ( item.type == 1 || item.type == 3 || item.type == 4 ) {
+              var ar = item.values.split("|");
+              field.value = ar[item.value];
+            }
+            cback(null, field);
+          };
+      async.map(
+        fieldValues, 
+        convertToJson, 
+        function(err, results) {
+          async.reduce(
+            results, 
+            {}, 
+            function(fields, item, callback) {
+              fields[item.label] = item.value;
+              callback(null, fields);
+            }, 
+            function(err, result){
+              cb(result);
+            }
+          );
+        }
+      );
+    }
+  );
 };
 
 Registrants.prototype.getExhibitorAttendeesNumber = function(attendee, callback) {
@@ -905,7 +1261,7 @@ Registrants.prototype.getExhibitorAttendeesNumber = function(attendee, callback)
       userId: attendee.userId,
       eventId: attendee.eventId
     }
-  }).success(function(number) {
+  }).then(function(number) {
     callback(number.toJSON());
   });
 };
@@ -917,7 +1273,7 @@ Registrants.prototype.getExhibitorAttendees = function(attendee, callback) {
       userId: attendee.userId,
       eventId: attendee.eventId
     }
-  }).success(function(attendees) {
+  }).then(function(attendees) {
     var convertToJson = function(item, cback) {
           var regId = attendee.event.badge_prefix + obj.pad(item.id, 5),
               reg = item.toJSON();
@@ -938,21 +1294,27 @@ Registrants.prototype.getAdditionalAttendees = function(attendee, callback) {
   this.models.CheckinGroupMembers.findAll({
     where: {
       groupUserId: attendee.userId,
-      event_id: attendee.eventId
+      event_id: attendee.eventId,
+      groupMemberId: {
+        $ne: attendee.memberId  
+      }
     }
-  }).success(function(attendees) {
+  }).then(function(attendees) {
     var convertToJson = function(item, cback) {
           var cb = function(values) {
+                console.log("Got linked values:", values);
                 reg = underscore.extend(reg, values);
                 cback(null, reg);
               },
               reg = item.toJSON(),
+              displayId = attendee.event.badge_prefix + "-" + reg.id,
               regId = attendee.event.badge_prefix + obj.pad(reg.id, 5);
           console.log("Linked Id", regId);
           reg.memberId = reg.groupMemberId;
           reg.userId = reg.groupUserId;
           reg.eventId = reg.event_id;
           reg.registrantId = regId;
+          reg.displayId = displayId;
           reg.paid = attendee.paid;
           obj.getRegistrantFieldValues(reg, cb);
         };
@@ -962,60 +1324,136 @@ Registrants.prototype.getAdditionalAttendees = function(attendee, callback) {
   });
 };
 
-Registrants.prototype.updateRegistrant = function(regId, values, callback) {
+Registrants.prototype.updateRegistrant = function(regId, type, values, callback) {
 
     var obj = this;
-
-    this.models.CheckinGroupMembers.find(regId).success(function(member) {
-      member.updateAttributes(values.fields).success(function(update) {
-        obj.getRegistrant(regId, {}, callback);
-      });
-    });
+    if (type === "Z") {
+      this.models.OnsiteAttendees.find(regId).then(
+        function(member) {
+          console.log(member);
+          member.updateAttributes(values.fields).then(
+            function(update) {
+              console.log(member);
+              obj.getRegistrant(regId, type, {}, callback);
+            },
+            function(error) {
+             console.log(error); 
+            }
+          );
+        }
+      );
+      
+    } else {
+      this.models.CheckinGroupMembers.find(regId).then(
+        function(member) {
+          console.log(member);
+          member.updateAttributes(values.fields).then(
+            function(update) {
+              console.log(member);
+              obj.getRegistrant(regId, type, {}, callback);
+            },
+            function(error) {
+             console.log(error); 
+            }
+          );
+        }
+      );
+    }
 
 };
 
-Registrants.prototype.updateRegistrantValues = function(regId, values, callback) {
+Registrants.prototype.updateRegistrantValues = function(regId, type, values, callback) {
 
   var updateSelf = ['confirmnum'],
       obj = this;
-  //console.log(values);
-  this.models.CheckinMemberFieldValues.destroy(
-    {
-      event_id: values.event_id,
-      member_id: values.groupMemberId
-    }
-  )
-  .success(function(affectedRows) {
-    obj.models.CheckinEventFields.findAll({
-      where: {
-        event_id: values.event_id
+  
+  if (type === "Z") {
+    this.models.OnsiteAttendees.find(regId).then(
+      function(member) {
+        console.log(member);
+        member.updateAttributes(values.fields).then(
+          function(update) {
+            console.log(member);
+            obj.getRegistrant(regId, type, {}, callback);
+          },
+          function(error) {
+           console.log(error); 
+          }
+        );
       }
-    })
-    .success(function(fields) {
-
-      var records = [],
-          createRecord = function(field, cb) {
-            var record = {};
-            if (typeof values.fields[field.name] != "undefined") {
-              record = {
-                value: values.fields[field.name],
+    );
+  } else {
+    async.waterfall(
+      [
+        function(cback) {
+          obj.models.CheckinMemberFieldValues.destroy(
+            {
+              where: {
                 event_id: values.event_id,
-                field_id: field.local_id,
                 member_id: values.groupMemberId
-              };
-              if (field.values && (field.type == 4 || field.type == 1)) {
-                  var fValues = field.values.split("|");
-                  values.fields[field.name] = fValues.indexOf(values.fields[field.name]);
               }
-              record.value = values.fields[field.name];
-              records.push(record);
             }
-            cb();
-          };
+          )
+          .then(
+            function(affectedRows) {
+             cback(null); 
+            }
+          );
 
-      async.each(fields, createRecord, function(err){
-
-        obj.models.CheckinMemberFieldValues.bulkCreate(records).success(function(results) {
+        },
+        function(cback) {
+          obj.models.CheckinEventFields.findAll({
+            where: {
+              event_id: values.event_id
+            }
+          })
+          .then(
+            function(fields) {    
+              cback(null, fields);
+            }
+          );
+        },
+        function(fields, cback) {
+          var records = [],
+              createRecord = function(field, cb) {
+                var record = {};
+                if (typeof values.fields[field.name] != "undefined") {
+                  record = {
+                    value: values.fields[field.name],
+                    event_id: values.event_id,
+                    field_id: field.local_id,
+                    member_id: values.groupMemberId
+                  };
+                  if (field.values && (field.type == 4 || field.type == 1)) {
+                      var fValues = field.values.split("|");
+                      values.fields[field.name] = fValues.indexOf(values.fields[field.name]);
+                  }
+                  record.value = values.fields[field.name];
+                  records.push(record);
+                  console.log("Record Created");
+                  cb(null);
+                } else {
+                  cb(null);
+                }
+              };
+          async.each(
+            fields, 
+            createRecord, 
+            function(err){
+              console.log("Created Records");
+              cback(null, records);
+            }
+          )
+        },
+        function(records, cback) {
+          console.log("Updating Registrant");
+          obj.models.CheckinMemberFieldValues.bulkCreate(records).then(
+            function(results) {
+              cback(null);
+            }
+          )
+        }/*,
+        function(cback) {
           var recs = {
                 event_id: values.event_id,
                 groupMemberId: values.groupMemberId
@@ -1026,23 +1464,41 @@ Registrants.prototype.updateRegistrantValues = function(regId, values, callback)
                 }
                 cb();
               };
-          async.each(updateSelf, createRecord, function(err) {
-            obj.models.CheckinGroupMembers.find({
+          async.each(
+            updateSelf, 
+            createRecord, 
+            function(err) {
+              cback(null, recs);
+            }
+          );
+        },
+        function(recs, cback) {
+          obj.models.CheckinGroupMembers.find(
+            {
               where: {
                 event_id: values.event_id,
                 groupMemberId: values.groupMemberId
               }
-            }).success(function(member) {
-              member.updateAttributes(recs).success(function(update) {
-                obj.getRegistrant(regId, {}, callback);
-              });
-            });
-          });
-        });
-      });
-    })
-  });
-
+            }
+          ).then(
+            function(member) {
+              member.updateAttributes(recs).then(
+                function(update) {
+                  cback(null);
+                }
+              );
+            }
+          );
+        }
+        */
+      ],
+      function(error) {
+        console.log("Registrant Updated!");
+        obj.getRegistrant(regId, type, {}, callback);
+      }
+    );
+  }
+    
 };
 
 Registrants.prototype.updateAttendeeValues = function(registrantId, values, callback) {
@@ -1053,7 +1509,7 @@ Registrants.prototype.updateAttendeeValues = function(registrantId, values, call
     this.updateExhibitorAttendee(regId, values, callback);
   } else {
     //console.log("Get General Attendee");
-    this.updateRegistrantValues(regId, values, callback);
+    this.updateRegistrantValues(regId, regType, values, callback);
   }
 };
 
@@ -1065,7 +1521,7 @@ Registrants.prototype.updateAttendee = function(registrantId, values, callback) 
     this.updateExhibitorAttendee(regId, values, callback);
   } else {
     //console.log("Get General Attendee");
-    this.updateRegistrant(regId, values, callback);
+    this.updateRegistrant(regId, regType, values, callback);
   }
 };
 
@@ -1074,11 +1530,11 @@ Registrants.prototype.updateExhibitorAttendee = function(regId, values, callback
   //console.log(values);
   this.models.CheckinExhibitorAttendees
   .find(regId)
-  .success(function(attendee) {
+  .then(function(attendee) {
     //console.log(req.body);
     attendee.updateAttributes(
       values.fields
-    ).success(function(attendee) {
+    ).then(function(attendee) {
       obj.getExhibitorAttendee(regId, {}, callback);
     });
   });
@@ -1106,7 +1562,7 @@ Registrants.prototype.getRange = function(beginId, endId, type, callback) {
   });
 };
 
-Registrants.prototype.searchAttendees = function(fields, search, page, limit, extra, callback) {
+Registrants.prototype.searchAttendees = function(fields, search, page, limit, extra, callback) {    
   var sql = "",
       obj = this,
       fields = fields || [],
@@ -1116,56 +1572,87 @@ Registrants.prototype.searchAttendees = function(fields, search, page, limit, ex
       start = page * limit,
       vars = [],
       extra = extra || false,
-      registrants = [
-        {"total_entries": 0},
-        []
-      ];
+      registrants = [];
+  console.log(fields, search, page, limit, start);
+  search = search.replace(/\r?\n|\r/g,"");
   async.waterfall([
     function(cb) {
       if (fields.length == 0) {
         //console.log(page, start, limit);
         sql = "SELECT t.* FROM ( ";
-        sql += "(SELECT group_members.id, 'G' as type, biller.register_date FROM group_members "+
+        sql += "(SELECT group_members.id, 'G' as type, biller.register_date,biller.register_date as sortDate FROM group_members "+
                 "LEFT JOIN biller ON (group_members.groupUserId = biller.userID AND group_members.event_id = biller.eventId) "+
                 "WHERE biller.status != -1) ";
         sql += "UNION ALL ";
-        sql += "(SELECT exhibitorAttendees.id, 'E' as type, biller.register_date FROM exhibitorAttendees "+
+        sql += "(SELECT onsiteAttendees.id, 'Z' as type, onsiteAttendees.created as register_date, onsiteAttendees.updated as sortDate "+
+                "FROM onsiteAttendees) ";
+        sql += "UNION ALL ";
+        sql += "(SELECT exhibitorAttendees.id, 'E' as type, biller.register_date, exhibitorAttendees.updated as sortDate FROM exhibitorAttendees "+
                 "LEFT JOIN biller ON (exhibitorAttendees.userId = biller.userID AND exhibitorAttendees.eventId = biller.eventId) "+
                 "WHERE biller.status != -1) ";
         sql += ") AS  t";
       } else if (underscore.indexOf(fields, "confirmation") !== -1) {
         sql = "SELECT t.* FROM ( ";
-        sql += "(SELECT group_members.id, 'G' as type, biller.register_date "+
+        sql += "(SELECT group_members.id, 'G' as type, biller.register_date, biller.register_date as sortDate "+
                 "FROM group_members "+
                 "LEFT JOIN biller ON (group_members.groupUserId = biller.userID AND group_members.event_id = biller.eventId) "+
                 "WHERE (group_members.confirmnum LIKE ? OR biller.confirmNum LIKE ?) AND biller.status != -1) ";
-        vars.push("%"+search+"%", "%"+search+"%");
+        vars.push("%"+search, "%"+search);
         sql += "UNION ALL ";
-        sql += "(SELECT exhibitorAttendees.id, 'E' as type, biller.register_date FROM exhibitorAttendees "+
+        sql += "(SELECT onsiteAttendees.id, 'Z' as type, onsiteAttendees.created as register_date, onsiteAttendees.updated as sortDate "+
+                "FROM onsiteAttendees WHERE onsiteAttendees.confirmation LIKE ?) ";
+        vars.push("%"+search);
+        sql += "UNION ALL ";
+        sql += "(SELECT exhibitorAttendees.id, 'E' as type, biller.register_date, exhibitorAttendees.updated as sortDate FROM exhibitorAttendees "+
                "LEFT JOIN biller ON (exhibitorAttendees.userId = biller.userID AND exhibitorAttendees.eventId = biller.eventId) "+
                "WHERE biller.status != -1 AND biller.confirmNum LIKE ?) ";
-        vars.push("%"+search+"%");
+        vars.push("%"+search);
         sql += ") AS  t";
         console.log(sql);
       } else if (underscore.indexOf(fields, "registrantid") !== -1) {
         var type = search.charAt(0),
             id = parseInt(search.slice(1), 10);
 
-        if (type == "E") {
-          sql = "SELECT exhibitorAttendees.id, 'E' as type, biller.register_date "+
+        if (type === "E") {
+          sql = "SELECT exhibitorAttendees.id, 'E' as type, biller.register_date, exhibitorAttendees.updated as sortDate "+
                 "FROM exhibitorAttendees "+
                 "LEFT JOIN biller ON (exhibitorAttendees.userId = biller.userID AND exhibitorAttendees.eventId = biller.eventId) "+
                 "WHERE exhibitorAttendees.id = ? AND biller.status != -1";
+        } else if (type === "Z") {
+          sql = "(SELECT onsiteAttendees.id, 'Z' as type, onsiteAttendees.created as register_date, onsiteAttendees.updated as sortDate "+
+                "FROM onsiteAttendees WHERE onsiteAttendees.id = ?) ";
         } else {
-          sql = "SELECT group_members.id, 'G' as type, biller.register_date "+
+          sql = "SELECT group_members.id, 'G' as type, biller.register_date, biller.register_date as sortDate "+
                 "FROM group_members "+
                 "LEFT JOIN biller ON (group_members.groupUserId = biller.userID AND group_members.event_id = biller.eventId) "+
                 "WHERE group_members.id = ? AND biller.status != -1";
         }
         vars.push(id);
+       } else if(underscore.indexOf(fields, "sortDate") !== -1) {
+        sql = "SELECT t.* FROM ( "
+        sql += "(SELECT group_members.id, 'G' as type, biller.register_date, biller.register_date as sortDate "+
+                  " FROM event_fields  "+
+                  " JOIN member_field_values ON (event_fields.local_id = member_field_values.field_id AND event_fields.event_id = member_field_values.event_id) "+
+                  " JOIN group_members ON (member_field_values.member_id = group_members.groupMemberId  AND member_field_values.event_id = group_members.event_id) "+
+                  " JOIN biller ON (group_members.groupUserId = biller.userID AND group_members.event_id = biller.eventId)"+
+                  " WHERE biller.status != -1  ORDER BY biller.register_date DESC ) UNION ";
+        sql += "(SELECT group_members.id, 'G' as type, biller.register_date, biller.register_date as sortDate  "+
+            "FROM event_fields   "+
+            "JOIN biller_field_values ON (event_fields.local_id = biller_field_values.field_id AND event_fields.event_id = biller_field_values.event_id)  "+
+            "JOIN biller ON (biller_field_values.user_id = biller.userID AND event_fields.event_id = biller.eventId)  "+
+            "JOIN group_members ON (biller.userId = group_members.groupUserId  AND event_fields.event_id = group_members.event_id) "+
+            "WHERE biller.status != -1 ORDER BY biller.register_date DESC ) UNION (";
+        sql += "SELECT onsiteAttendees.id, 'Z' as type, onsiteAttendees.created as register_date, onsiteAttendees.updated as sortDate "+
+              "FROM onsiteAttendees "+
+              "ORDER BY exhibitorAttendees.updated DESC ) UNION (";
+        sql += "SELECT exhibitorAttendees.id, 'E' as type, biller.register_date, exhibitorAttendees.updated as sortDate "+
+              "FROM exhibitorAttendees "+
+              "JOIN biller ON (exhibitorAttendees.userId = biller.userID AND exhibitorAttendees.eventId = biller.eventId) "+
+              "WHERE biller.status != -1  ORDER BY exhibitorAttendees.updated DESC )";
+        sql += ") AS  t";
       } else {
         sql = "SELECT t.* FROM ( "
-        sql += "(SELECT group_members.id, 'G' as type, biller.register_date "+
+        sql += "(SELECT group_members.id, 'G' as type, biller.register_date, biller.register_date as sortDate "+
                   " FROM event_fields  "+
                   " LEFT JOIN member_field_values ON (event_fields.local_id = member_field_values.field_id AND event_fields.event_id = member_field_values.event_id) "+
                   " LEFT JOIN group_members ON (member_field_values.member_id = group_members.groupMemberId  AND member_field_values.event_id = group_members.event_id) "+
@@ -1179,23 +1666,21 @@ Registrants.prototype.searchAttendees = function(fields, search, page, limit, ex
           sql += "event_fields.class = ?";
           vars.push(field);
         });
-        sql += ")) UNION ";
-        sql += "(SELECT group_members.id, 'G' as type, biller.register_date  "+
-            "FROM event_fields   "+
-            "LEFT JOIN biller_field_values ON (event_fields.local_id = biller_field_values.field_id AND event_fields.event_id = biller_field_values.event_id)  "+
-            "LEFT JOIN biller ON (biller_field_values.user_id = biller.userID AND event_fields.event_id = biller.eventId)  "+
-            "LEFT JOIN group_members ON (biller.userId = group_members.groupUserId  AND event_fields.event_id = group_members.event_id) "+
-            "WHERE biller.status != -1 AND biller_field_values.value LIKE ? AND (";
-        vars.push("%"+search+"%");
+        sql += ")) UNION (";
+        sql += "SELECT onsiteAttendees.id, 'Z' as type, onsiteAttendees.created as register_date, onsiteAttendees.updated as sortDate "+
+              "FROM onsiteAttendees "+
+              "WHERE (";
         fields.forEach(function(field, index) {
           if (index > 0) {
               sql += " OR ";
           }
-          sql += "event_fields.class = ?";
-          vars.push(field);
+          field = (field == "company") ? "organization" : field;
+          sql += "onsiteAttendees."+field+" LIKE ?";
+          vars.push("%"+search+"%");
         });
+        
         sql += ")) UNION (";
-        sql += "SELECT exhibitorAttendees.id, 'E' as type, biller.register_date "+
+        sql += "SELECT exhibitorAttendees.id, 'E' as type, biller.register_date, exhibitorAttendees.updated as sortDate "+
               "FROM exhibitorAttendees "+
               "LEFT JOIN biller ON (exhibitorAttendees.userId = biller.userID AND exhibitorAttendees.eventId = biller.eventId) "+
               "WHERE biller.status != -1 AND (";
@@ -1210,45 +1695,48 @@ Registrants.prototype.searchAttendees = function(fields, search, page, limit, ex
         sql += "))";
         sql += ") AS  t";
       }
-
-      obj.db.checkin
-      .query(
-        sql, null,
-        { raw: true }, vars
-      )
-      .success(function(attendees) {
-        registrants[0].total_entries = attendees.length;
-        cb(null);
-      });
+      
+      cb(null);
     },
     function(cb) {
-      sql += " ORDER BY id DESC "+
+      sql += " ORDER BY sortDate DESC "+
                "LIMIT "+start+","+limit;
-      obj.db.checkin
-      .query(
-        sql, null,
-        { raw: true }, vars
-      )
-      .success(function(attendees) {
-        var regs = [],
-            getReg = function(item, cb) {
-              var regId = item.type + obj.pad(item.id, 5);
-              returnCb = function(registrant) {
-                if (!underscore.isEmpty(registrant)) {
-                  regs.push(registrant);
-                }
-                cb();
+      
+      obj.db.checkin.query(
+        sql,
+        {
+          replacements: vars,
+          type: Sequelize.QueryTypes.SELECT
+        }
+      ).then(
+        function(attendees) {
+          cb(null, attendees);
+        }
+      );
+    },
+    function(attendees, cb) {
+      var regs = [],
+          getReg = function(item, cb) {
+            var regId = item.type + obj.pad(item.id, 5);
+            returnCb = function(registrant) {
+              if (!underscore.isEmpty(registrant)) {
+                regs.push(registrant);
               }
-              obj.getAttendee(regId, returnCb);
-            };
+              console.log("created reg", item.type);
+              cb();
+            }
+            console.log("creating reg", item.type);
+            obj.getAttendee(regId, returnCb);
+          };
 
-        async.each(attendees, getReg, function(err){
-          cb(null, regs);
-        });
-      });
+      async.each(attendees, getReg, function(err){
+        console.log("got all regs");
+        cb(null, regs);
+      }); 
     }
   ],function(err, results) {
-    registrants[1] = results;
+   console.log("sending regs");
+    registrants = results;
     callback(registrants);
   });
 };
@@ -1262,7 +1750,7 @@ Registrants.prototype.getCheckedInCount = function(callback) {
       .findAndCountAll({
          where: ["attend = 1"]
       })
-      .success(function(result) {
+      .then(function(result) {
         cb(null, result.count);
       });
     },
@@ -1271,7 +1759,7 @@ Registrants.prototype.getCheckedInCount = function(callback) {
       .findAndCountAll({
          where: ["attend = 1"]
       })
-      .success(function(result) {
+      .then(function(result) {
         cb(null, count+result.count);
       });
     }
@@ -1289,7 +1777,7 @@ Registrants.prototype.getAllCheckedInAttendees = function(callback) {
       .findAll({
          where: ["attend = 1"]
       })
-      .success(function(results) {
+      .then(function(results) {
         var regs = [],
             getReg = function(item, cb) {
               var regId = "G" + obj.pad(item.id, 5);
@@ -1312,7 +1800,7 @@ Registrants.prototype.getAllCheckedInAttendees = function(callback) {
       .findAll({
          where: ["attend = 1"]
       })
-      .success(function(results) {
+      .then(function(results) {
         var regs = [],
             getReg = function(item, cb) {
               var regId = "E" + obj.pad(item.id, 5);
@@ -1340,136 +1828,61 @@ Registrants.prototype.initRegistrant = function(values, callback) {
         callback(registrants);
       },
       obj = this,
-      u = new Date(),
-      randomUserId  = u.getDate().toString() + u.getHours().toString() + u.getMinutes().toString() + u.getSeconds().toString() + u.getMilliseconds().toString(),
-      m = new Date(),
-      randomMemberId = m.getDate().toString() + m.getHours().toString() + m.getMinutes().toString() + m.getSeconds().toString() + m.getMilliseconds().toString();
+      date = new Date();
 
   async.waterfall([
-    function(cb){
-      obj.models.CheckinBiller.find({
-        where: {
-          eventId: values.eventId
-        },
-        order: "userId DESC",
-        limit: 1
-      }).success(function(biller) {
-        var reg = {};
-        reg.biller = biller.toJSON();
-        reg.userId = randomUserId;
-        cb(null, reg);
-      });
-    },
-    function(reg, cb) {
-      obj.models.CheckinEventFields.findAll({
-        where: {
-          event_id: values.eventId
-        },
-        order: "ordering ASC"
-      }).success(function(fields) {
-        var convertToJson = function(item, cback) {
-              cback(null, item.toJSON());
-            };
-        async.map(fields, convertToJson, function(err, results){
-          reg.fields = results;
-          cb(null, reg);
-        });
-      });
-    },
-    function(reg, cb){
-      obj.models.CheckinGroupMembers.find({
-        where: {
-          event_id: values.eventId
-        },
-        order: "groupMemberId DESC",
-        limit: 1
-      }).success(function(lastMember) {
-        reg.lastMember = lastMember.toJSON();
-        reg.memberId = randomMemberId,
-        cb(null, reg);
-      });
-    },
-    function(reg, cb){
-      obj.getEvent({eventId: values.eventId}, function(event) {
-        reg.confirmNum = event.confirm_number_prefix+randomMemberId;
-        reg.event = event;
-        cb(null, reg);
-      });
-    },
-    function(reg, cb){
-      var vars = {
-            "userId": reg.userId,
-            "eventId": values.eventId,
-            "local_eventId": values.slabId,
-            "type": "G",
-            "register_date": "0000-00-00 00:00:00",
-            "due_amount": 0.00,
-            "confirmNum": reg.confirmNum,
-            "status": 1,
-            "memtot": 1
-          };
-
-      obj.models.CheckinBiller.create(vars).success(function(biller) {
-        reg.newBiller = biller.toJSON();
-        cb(null, reg);
-      });
-
-    },
-    function(reg, cb){
-      var vars = {
-            "groupMemberId": reg.memberId,
-            "event_id": values.eventId,
-            "groupUserId": reg.userId,
-            "confirmnum": reg.confirmNum
-          };
-      obj.models.CheckinGroupMembers.create(vars).success(function(groupMember) {
-        reg.newMember = groupMember.toJSON();
-        reg.regId = reg.event.badge_prefix + obj.pad(reg.newMember.id, 5);
-        cb(null, reg);
-      });
-    },
-    function(reg, cb){
-        var sql = "",
-            fvars,
-            vars = [],
-            processFields = function(field, pCb) {
-              if (typeof values[field.name] != "undefined") {
-                sql += "INSERT INTO member_field_values SET value = ?, event_id = ?, field_id = ?, member_id = ?; ";
-                if (field.values) {
-                    fValues = field.values.split("|");
-                    values[field.name] = fValues.indexOf(values[field.name]);
-                }
-                vars.push(values[field.name], values.eventId, field.local_id, reg.memberId);
-                sql += "INSERT INTO biller_field_values SET value = ?, event_id = ?, field_id = ?, user_id = ?; ";
-                if (field.values) {
-                    fValues = field.values.split("|");
-                    values[field.name] = fValues.indexOf(values[field.name]);
-                }
-                vars.push(values[field.name], values.eventId, field.local_id, reg.userId);
-                //console.log(values.fields[field.name], values.event_id, field.local_id, values.local_id);
-                pCb(null);
-              } else {
-                pCb(null);
-              }
-            };
-        async.each(reg.fields, processFields, function(err) {
-          if (vars.length) {
-            obj.db.checkin
-            .query(
-              sql, null,
-              { raw: true }, vars
-            )
-            .success(function(insertResults) {
-              cb(null, reg);
-            });
-          } else {
-            cb(null, reg);
+    function(cb) {
+      var record = values.fields;
+      record.created = date;
+      record.updated = date;
+      if (values.type === "E") {
+        record.userId = values.biller.userId;
+        record.eventId = values.event.eventId;
+        obj.models.CheckinExhibitorAttendees.create(record).then(
+          function(registrant) {
+            cb(null, registrant);
           }
-        });
+        ); 
+      } else {
+        var record = values.fields;
+        record.confirmation = values.event.confirm_number_prefix+"X";
+        record.eventId = values.event.eventId;
+        obj.models.OnsiteAttendees.create(record).then(
+          function(registrant) {
+            registrant.confirmation = values.event.confirm_number_prefix+registrant.id.toString();
+            registrant.save().then(
+              function() {
+                cb(null, registrant);
+              }
+            );
+          }
+        ); 
       }
+    },
+    function(registrant, cb) {
+      if (values.type === "Z") {
+        var vals = {
+            basefee: 0,
+            fee: 0,
+            paid_amount: 0,
+            status: 0,
+            event_id: registrant.eventId,
+            user_id: registrant.id
+          }; 
+        obj.models.CheckinEventFees.create(vals).then(
+          function(fees) {
+            console.log(fees);
+            cb(null, registrant);
+          }
+        );
+      } else {
+        cb(null, registrant);
+      }
+    }
   ], function (err, result) {
     //console.log(result);
-    obj.searchAttendees(["registrantid"], result.regId, 0, 20, false, retCallback);
+    var regId = values.type+result.id.toString();
+    obj.searchAttendees(["registrantid"], regId, 0, 20, false, retCallback);
   });
 };
 
@@ -1485,11 +1898,11 @@ Registrants.prototype.saveCheckTransaction = function(values, callback) {
           userId: values.registrant.biller_id
         }
       })
-      .success(function(biller) {
+      .then(function(biller) {
         var attr = {
               transaction_id: values.transaction.payment.checkNumber
             };
-        biller.updateAttributes(attr).success(function(biller) {
+        biller.updateAttributes(attr).then(function(biller) {
           cb(null, {biller: biller});
         });
       });
@@ -1502,7 +1915,7 @@ Registrants.prototype.saveCheckTransaction = function(values, callback) {
           user_id: values.registrant.biller_id
         }
       })
-      .success(function(fees) {
+      .then(function(fees) {
         results.fees = fees;
         cb(null, results);
       });
@@ -1516,7 +1929,7 @@ Registrants.prototype.saveCheckTransaction = function(values, callback) {
             payment_method: "2"
           };
       if (results.fees) {
-        results.fees.updateAttributes(vals).success(function(fees) {
+        results.fees.updateAttributes(vals).then(function(fees) {
           results.fees = fees;
           cb(null, results);
         });
@@ -1524,7 +1937,7 @@ Registrants.prototype.saveCheckTransaction = function(values, callback) {
         vals = underscore.extend(vals, {event_id: values.registrant.event_id, user_id: values.registrant.biller_id});
         obj.models.CheckinEventFees
         .create(vals)
-        .success(function(fees) {
+        .then(function(fees) {
           results.fees = fees;
           cb(null, results);
         });
@@ -1547,46 +1960,52 @@ Registrants.prototype.saveCreditTransaction = function(values, callback) {
           userId: values.registrant.biller_id
         }
       })
-      .success(function(biller) {
-        var attr = {
-              transaction_id: values.transaction.payment.checkNumber
-            };
-        biller.updateAttributes(attr).success(function(biller) {
-          cb(null, {biller: biller});
-        });
+      .then(function(biller) {
+        if (biller) {
+          var attr = {
+                transaction_id: values.transaction.transId
+              };
+          biller.updateAttributes(attr).then(function(biller) {
+            cb(null, {biller: biller});
+          });
+        } else {
+          cb(null, {biller: null});
+        }
       });
     },
     function(results, cb) {
+      var billerId = (values.registrant.badge_prefix === "Z") ? values.registrant.id : values.registrant.biller_id;
       obj.models.CheckinEventFees
       .find({
         where: {
           event_id: values.registrant.event_id,
-          user_id: values.registrant.biller_id
+          user_id: billerId
         }
       })
-      .success(function(fees) {
+      .then(function(fees) {
         results.fees = fees;
+        results.billerId = billerId;
         cb(null, results);
       });
     },
     function(results, cb) {
       var vals = {
-            basefee: transAction.amount,
-            fee: transAction.amount,
-            paid_amount: transAction.amount,
+            basefee: transAction.settleAmount,
+            fee: transAction.settleAmount,
+            paid_amount: transAction.settleAmount,
             status: 1,
             payment_method: "authorizenet"
           };
       if (results.fees) {
-        results.fees.updateAttributes(vals).success(function(fees) {
+        results.fees.updateAttributes(vals).then(function(fees) {
           results.fees = fees;
           cb(null, results);
         });
       } else {
-        vals = underscore.extend(vals, {event_id: values.registrant.event_id, user_id: values.registrant.biller_id});
+        vals = underscore.extend(vals, {event_id: values.registrant.event_id, user_id: results.billerId});
         obj.models.CheckinEventFees
         .create(vals)
-        .success(function(fees) {
+        .then(function(fees) {
           results.fees = fees;
           cb(null, results);
         });
@@ -1633,9 +2052,41 @@ Registrants.prototype.saveAuthorizeNetTransaction = function(data, callback) {
 
   this.models.Transactions
   .create(vars)
-  .success(function(trans) {
+  .then(function(trans) {
     callback({db: trans, credit: data});
   });
+};
+
+Registrants.prototype.getFields = function(type, callback) {
+  var fields = [];
+  if (type === "Z") {
+    fields = onsiteFields; 
+  } else if (type === "E") {
+    fields = exhFields; 
+  }
+  
+  callback(fields);
+};
+
+Registrants.prototype.getExhibitorCompanies = function(company, callback) {
+  var sql = "SELECT biller.*, exhibitorAttendees.organization, 'E' as type, biller.register_date, exhibitorAttendees.updated as sortDate "+
+            "FROM exhibitorAttendees "+
+            "LEFT JOIN biller ON (exhibitorAttendees.userId = biller.userId AND exhibitorAttendees.eventId = biller.eventId) "+
+            "WHERE biller.status != -1 AND exhibitorAttendees.organization LIKE :company GROUP BY biller.userId ORDER BY organization ASC";
+  
+  this.db.checkin.query(
+    sql,
+    {
+      replacements: {
+        company: "%"+company+"%"
+      },
+      type: Sequelize.QueryTypes.SELECT
+    }
+  ).then(
+    function(exhibitors) {
+      callback(exhibitors);
+    }
+  );
 };
 
 Registrants.prototype.pad = function(num, size) {

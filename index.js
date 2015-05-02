@@ -937,6 +937,7 @@ Registrants.prototype.createOnsiteModel = function(attendee, options, cb) {
     function(attendee, callback) {
       attendee.biller = {};
       attendee.biller.userId = attendee.id;
+      attendee.biller.register_date = attendee.created;
       attendee.biller.confirmNum = attendee.confirmation;
       async.each(
         onsiteBillerFields,

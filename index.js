@@ -571,16 +571,12 @@ Registrants.prototype.initialize = function(options) {
 
   this.models.Sites = this.db.checkin.define('siteIds', {
     id:                   { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-    chapter:              { type: Sequelize.INTEGER(6) },
-    memberType:           { type: Sequelize.STRING(255) },
     company:              { type: Sequelize.STRING(255) },
     street1:              { type: Sequelize.STRING(255) },
     street2:              { type: Sequelize.STRING(255) },
     city:                 { type: Sequelize.STRING(255) },
     state:                { type: Sequelize.STRING(255) },
     zipCode:              { type: Sequelize.STRING(255) },
-    joinDate:             { type: Sequelize.DATE },
-    paidDate:             { type: Sequelize.DATE },
     siteId:               { type: Sequelize.STRING(255) }
   });
 
@@ -815,6 +811,17 @@ Registrants.prototype.createRegistrantModel = function(attendee, options, cb) {
       }
     },
     function(attendee, callback) {
+      if ("siteid" in attendee || "siteId" in attendee) {
+        var siteid = ("siteid" in attendee) ? attendee.siteid : attendee.siteId;
+        obj.getSiteInfo(siteid, function(site) {
+          attendee.site = site;
+          callback(null, attendee);
+        });
+      } else {
+        callback(null, attendee);
+      }
+    },
+    function(attendee, callback) {
       async.each(
         attendee.badgeSchema,
         function(field, callback) {
@@ -881,6 +888,17 @@ Registrants.prototype.createExhibitorModel = function(attendee, options, cb) {
       if (!options.excludeLinked) {
         obj.getExhibitorAttendees(attendee, function(attendees) {
           attendee.linked = attendees;
+          callback(null, attendee);
+        });
+      } else {
+        callback(null, attendee);
+      }
+    },
+    function(attendee, callback) {
+      if ("siteid" in attendee || "siteId" in attendee) {
+        var siteid = ("siteid" in attendee) ? attendee.siteid : attendee.siteId;
+        obj.getSiteInfo(siteid, function(site) {
+          attendee.site = site;
           callback(null, attendee);
         });
       } else {
@@ -966,6 +984,17 @@ Registrants.prototype.createOnsiteModel = function(attendee, options, cb) {
     function(attendee, callback) {
       attendee.linked = [];
       callback(null, attendee);
+    },
+    function(attendee, callback) {
+      if ("siteid" in attendee || "siteId" in attendee) {
+        var siteid = ("siteid" in attendee) ? attendee.siteid : attendee.siteId;
+        obj.getSiteInfo(siteid, function(site) {
+          attendee.site = site;
+          callback(null, attendee);
+        });
+      } else {
+        callback(null, attendee);
+      }
     },
     function(attendee, callback) {
       attendee.badgeSchema = onsiteFields;
@@ -2134,6 +2163,20 @@ Registrants.prototype.getExhibitorCompanies = function(company, callback) {
   ).then(
     function(exhibitors) {
       callback(exhibitors);
+    }
+  );
+};
+
+Registrants.prototype.getSiteInfo = function(siteId, cb) {
+  this.models.Sites.find(
+    { 
+      where: { 
+        siteId: siteId 
+      } 
+    }
+  ).then(
+    function(site) {
+      cb(site);
     }
   );
 };

@@ -625,7 +625,7 @@ Registrants.prototype.initialize = function(options) {
 };
 
 Registrants.prototype.getAttendee = function(registrantId, callback){
-  var regType = registrantId.slice(0,1),
+  var regType = registrantId.slice(0,1).toUpperCase(),
       regId = parseInt(registrantId.slice(1), 10),
       returnCb = function(data) {
         callback(data);

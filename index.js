@@ -542,8 +542,9 @@ Registrants.prototype.initialize = function(options) {
       phone :               { type: Sequelize.STRING(25) },
       title :               { type: Sequelize.STRING(255) },
       organization :        { type: Sequelize.STRING(255) },
-      created :             { type: Sequelize.DATE },
-      updated :             { type: Sequelize.DATE },
+      createdAt :             { type: Sequelize.DATE },
+      updatedAt :             { type: Sequelize.DATE },
+      deletedAt :             { type: Sequelize.DATE },
       siteId :              { type: Sequelize.STRING(10) }
     });
 
@@ -562,8 +563,9 @@ Registrants.prototype.initialize = function(options) {
     phone :               { type: Sequelize.STRING(25) },
     title :               { type: Sequelize.STRING(255) },
     organization :        { type: Sequelize.STRING(255) },
-    created :             { type: Sequelize.DATE },
-    updated :             { type: Sequelize.DATE },
+    createdAt :             { type: Sequelize.DATE },
+    updatedAt :             { type: Sequelize.DATE },
+    deletedAt :             { type: Sequelize.DATE },
     siteId :              { type: Sequelize.STRING(10) },
     attend:               { type: Sequelize.BOOLEAN },
     speaker:              { type: Sequelize.BOOLEAN },
@@ -573,6 +575,7 @@ Registrants.prototype.initialize = function(options) {
   this.models.OnsiteAttendees = this.db.checkin.define('onsiteAttendees', {
     id:                   { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
     confirmation :        { type: Sequelize.STRING(255) },
+    pin:                  { type: Sequelize.STRING(4) },
     eventId :             { type: Sequelize.STRING(36) },
     firstname :           { type: Sequelize.STRING(255) },
     lastname :            { type: Sequelize.STRING(255) },
@@ -586,8 +589,6 @@ Registrants.prototype.initialize = function(options) {
     management:           { type: Sequelize.BOOLEAN },
     title :               { type: Sequelize.STRING(255) },
     organization :        { type: Sequelize.STRING(255) },
-    created :             { type: Sequelize.DATE },
-    updated :             { type: Sequelize.DATE },
     siteId :              { type: Sequelize.STRING(10) },
     attend:               { type: Sequelize.BOOLEAN },
     checked_in_time :     { type: Sequelize.DATE },
@@ -595,6 +596,8 @@ Registrants.prototype.initialize = function(options) {
     groupConfirm :        { type: Sequelize.STRING(255) },
     speaker:              { type: Sequelize.BOOLEAN },
     exhibitor:            { type: Sequelize.BOOLEAN },
+    createdAt :             { type: Sequelize.DATE },
+    updatedAt :             { type: Sequelize.DATE },
     deletedAt :           { type: Sequelize.DATE }
   });
 
@@ -739,13 +742,13 @@ Registrants.prototype.getExhibitorAttendee = function(regId, options, callback){
               "lastname",
               "title",
               "email",
+              "phone",
               "organization",
               "address",
               "address2",
               "city",
               "state",
-              "zipcode",
-              "phone"
+              "zipcode"
             ]
           }
         );
@@ -918,13 +921,13 @@ Registrants.prototype.createOnsiteModel = function(attendee, options, cb) {
     "lastname",
     "title",
     "email",
+    "phone",
     "organization",
     "address",
     "address2",
     "city",
     "state",
-    "zipcode",
-    "phone"
+    "zipcode"
   ];
   async.waterfall([
     function(callback){
@@ -1036,7 +1039,7 @@ Registrants.prototype.getRegTransactions = function(attendee, callback) {
             function(result) {
               if (result) {
                 _trans = underscore.extend(_trans, result.toJSON());
-                paid = (_trans.settlementState === "settledSuccessfully" || _trans.checkNumber) ? true : paid;
+                paid = (_trans.  responseCode === 1 || _trans.checkNumber) ? true : paid;
                 transactions.push(_trans);
               }
               cb();
@@ -1544,19 +1547,19 @@ Registrants.prototype.searchAttendees = function(fields, search, page, limit, ex
       if (fields.length == 0) {
         //console.log(page, start, limit);
         sql = "SELECT t.* FROM ( ";
-        sql += "(SELECT onsiteAttendees.id, 'G' as type, onsiteAttendees.created as register_date, onsiteAttendees.updated as sortDate "+
+        sql += "(SELECT onsiteAttendees.id, 'G' as type, onsiteAttendees.createdAt as register_date, onsiteAttendees.updatedAt as sortDate "+
                 "FROM onsiteAttendees) ";
         sql += "UNION ALL ";
-        sql += "(SELECT exhibitorAttendees.id, 'E' as type, exhibitors.created as register_date, exhibitorAttendees.updated as sortDate FROM exhibitorAttendees "+
+        sql += "(SELECT exhibitorAttendees.id, 'E' as type, exhibitors.createdAt as register_date, exhibitorAttendees.updatedAt as sortDate FROM exhibitorAttendees "+
                 "LEFT JOIN exhibitors ON exhibitorAttendees.userId = exhibitors.id ) ";
         sql += ") AS  t";
       } else if (underscore.indexOf(fields, "confirmation") !== -1) {
         sql = "SELECT t.* FROM ( ";
-        sql += "(SELECT onsiteAttendees.id, 'G' as type, onsiteAttendees.created as register_date, onsiteAttendees.updated as sortDate "+
+        sql += "(SELECT onsiteAttendees.id, 'G' as type, onsiteAttendees.createdAt as register_date, onsiteAttendees.updatedAt as sortDate "+
                 "FROM onsiteAttendees WHERE onsiteAttendees.confirmation LIKE ?) ";
         vars.push("%"+search);
         sql += "UNION ALL ";
-        sql += "(SELECT exhibitorAttendees.id, 'E' as type, exhibitors.created as register_date, exhibitorAttendees.updated as sortDate FROM exhibitorAttendees "+
+        sql += "(SELECT exhibitorAttendees.id, 'E' as type, exhibitors.createdAt as register_date, exhibitorAttendees.updatedAt as sortDate FROM exhibitorAttendees "+
                "LEFT JOIN exhibitors ON exhibitorAttendees.userId = exhibitors.id "+
                "WHERE exhibitors.confirmation LIKE ?) ";
         vars.push("%"+search);
@@ -1564,10 +1567,10 @@ Registrants.prototype.searchAttendees = function(fields, search, page, limit, ex
         console.log(sql);
       } else if (underscore.indexOf(fields, "attend") !== -1) {
         sql = "SELECT t.* FROM ( ";
-        sql += "(SELECT onsiteAttendees.id, 'G' as type, onsiteAttendees.created as register_date, onsiteAttendees.updated as sortDate "+
+        sql += "(SELECT onsiteAttendees.id, 'G' as type, onsiteAttendees.createdAt as register_date, onsiteAttendees.updatedAt as sortDate "+
                 "FROM onsiteAttendees WHERE onsiteAttendees.attend = 1) ";
         sql += "UNION ALL ";
-        sql += "(SELECT exhibitorAttendees.id, 'E' as type, exhibitors.created as register_date, exhibitorAttendees.updated as sortDate FROM exhibitorAttendees "+
+        sql += "(SELECT exhibitorAttendees.id, 'E' as type, exhibitors.createdAt as register_date, exhibitorAttendees.updatedAt as sortDate FROM exhibitorAttendees "+
                "LEFT JOIN exhibitors ON exhibitorAttendees.userId = exhibitors.id "+
                "WHERE exhibitorAttendees.attend = 1) ";
         sql += ") AS  t";
@@ -1576,28 +1579,28 @@ Registrants.prototype.searchAttendees = function(fields, search, page, limit, ex
             id = parseInt(search.slice(1), 10);
 
         if (type === "E") {
-          sql = "SELECT exhibitorAttendees.id, 'E' as type, exhibitors.created as register_date, exhibitorAttendees.updated as sortDate "+
+          sql = "SELECT exhibitorAttendees.id, 'E' as type, exhibitors.createdAt as register_date, exhibitorAttendees.updatedAt as sortDate "+
                 "FROM exhibitorAttendees "+
                 "LEFT JOIN exhibitors ON exhibitorAttendees.userId = exhibitors.id "+
                 "WHERE exhibitorAttendees.id = ?";
         } else {
-          sql = "(SELECT onsiteAttendees.id, 'G' as type, onsiteAttendees.created as register_date, onsiteAttendees.updated as sortDate "+
+          sql = "(SELECT onsiteAttendees.id, 'G' as type, onsiteAttendees.createdAt as register_date, onsiteAttendees.updatedAt as sortDate "+
                 "FROM onsiteAttendees WHERE onsiteAttendees.id = ?) ";
         }
         vars.push(id);
        } else if(underscore.indexOf(fields, "sortDate") !== -1) {
         sql = "SELECT t.* FROM ( "
-        sql += "(SELECT onsiteAttendees.id, 'G' as type, onsiteAttendees.created as register_date, onsiteAttendees.updated as sortDate "+
+        sql += "(SELECT onsiteAttendees.id, 'G' as type, onsiteAttendees.createdAt as register_date, onsiteAttendees.updated as sortDate "+
               "FROM onsiteAttendees "+
-              "ORDER BY exhibitorAttendees.updated DESC ) UNION (";
-        sql += "SELECT exhibitorAttendees.id, 'E' as type, exhibitors.created as register_date, exhibitorAttendees.updated as sortDate "+
+              "ORDER BY exhibitorAttendees.updatedAt DESC ) UNION (";
+        sql += "SELECT exhibitorAttendees.id, 'E' as type, exhibitors.createdAt as register_date, exhibitorAttendees.updatedAt as sortDate "+
               "FROM exhibitorAttendees "+
               "JOIN exhibitors ON exhibitorAttendees.userId = exhibitors.id "+
-              "WHERE ORDER BY exhibitorAttendees.updated DESC )";
+              "WHERE ORDER BY exhibitorAttendees.updatedAt DESC )";
         sql += ") AS  t";
       } else {
         sql = "SELECT t.* FROM ( "
-        sql += "(SELECT onsiteAttendees.id, 'G' as type, onsiteAttendees.created as register_date, onsiteAttendees.updated as sortDate "+
+        sql += "(SELECT onsiteAttendees.id, 'G' as type, onsiteAttendees.createdAt as register_date, onsiteAttendees.updatedAt as sortDate "+
               "FROM onsiteAttendees "+
               "WHERE (";
         fields.forEach(function(field, index) {
@@ -1610,7 +1613,7 @@ Registrants.prototype.searchAttendees = function(fields, search, page, limit, ex
         });
         
         sql += ")) UNION (";
-        sql += "SELECT exhibitorAttendees.id, 'E' as type, exhibitors.created as register_date, exhibitorAttendees.updated as sortDate "+
+        sql += "SELECT exhibitorAttendees.id, 'E' as type, exhibitors.createdAt as register_date, exhibitorAttendees.updatedAt as sortDate "+
               "FROM exhibitorAttendees "+
               "LEFT JOIN exhibitors ON exhibitorAttendees.userId = exhibitors.id "+
               "WHERE (";
@@ -1757,7 +1760,7 @@ Registrants.prototype.getAllCheckedInAttendees = function(callback) {
 
 Registrants.prototype.initRegistrant = function(values, callback) {
   var retCallback = function(registrants) {
-        callback(registrants);
+        if (callback) callback(registrants);
       },
       obj = this,
       date = new Date();
@@ -1765,8 +1768,8 @@ Registrants.prototype.initRegistrant = function(values, callback) {
   async.waterfall([
     function(cb) {
       var record = values.fields;
-      record.created = date;
-      record.updated = date;
+      record.createdAt = date;
+      record.updatedAt = date;
       if (values.type === "E") {
         record.userId = values.biller.userId;
         record.eventId = values.event.eventId;
@@ -1958,7 +1961,7 @@ Registrants.prototype.getFields = function(type, callback) {
 };
 
 Registrants.prototype.getExhibitorCompanies = function(company, callback) {
-  var sql = "SELECT exhibitors.*, 'E' as type, exhibitors.created as register_date, exhibitors.updated as sortDate "+
+  var sql = "SELECT exhibitors.*, 'E' as type, exhibitors.createdAt as register_date, exhibitors.updatedAt as sortDate "+
             "FROM exhibitors "+
             "WHERE exhibitors.organization LIKE :company ORDER BY organization ASC";
   

@@ -7,6 +7,7 @@ var fs = require('fs'),
     underscore = require('underscore'),
     Sequelize = require("sequelize"),
     shortid = require('shortid32'),
+    gpc = require('generate-pincode'),
     exhFields = [
       {title: "First Name", id: "firstname", class:"firstname", type: "Text"},
       {title: "Last Name", id: "lastname", class:"lastname", type: "Text"},
@@ -552,6 +553,7 @@ Registrants.prototype.initialize = function(options) {
     id:                   { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
     userId :              { type: Sequelize.INTEGER },
     eventId :             { type: Sequelize.STRING(36) },
+    pin:                  { type: Sequelize.STRING(4) },
     firstname :           { type: Sequelize.STRING(255) },
     lastname :            { type: Sequelize.STRING(255) },
     address :             { type: Sequelize.STRING(255) },
@@ -1770,6 +1772,7 @@ Registrants.prototype.initRegistrant = function(values, callback) {
       var record = values.fields;
       record.createdAt = date;
       record.updatedAt = date;
+      record.pin = gpc(4);
       if (values.type === "E") {
         record.userId = values.biller.userId;
         record.eventId = values.event.eventId;

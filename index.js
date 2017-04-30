@@ -637,7 +637,7 @@ Registrants.prototype.initialize = function(options) {
     responseCode : { type: Sequelize.INTEGER(11) },
     responseReasonCode : { type: Sequelize.INTEGER(11) },
     responseReasonDescription : { type: Sequelize.STRING(255) },
-    authCode : { type: Sequelize.INTEGER(11) },
+    authCode : { type: Sequelize.STRING(10) },
     AVSResponse : { type: Sequelize.STRING(2) },
     cardCodeResponse : { type: Sequelize.STRING(2) },
     batchId : { type: Sequelize.INTEGER(11) },
@@ -1949,6 +1949,8 @@ Registrants.prototype.saveAuthorizeNetTransaction = function(data, callback) {
   }
   vars.submitTimeUTC = moment(vars.submitTimeUTC, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('YYYY-MM-DD HH:mm:ss');
   vars.submitTimeLocal = moment(vars.submitTimeLocal, 'YYYY-MM-DDTHH:mm:ss.SSS').format('YYYY-MM-DD HH:mm:ss');
+  vars.settlementTimeUTC = moment(vars.settlementTimeUTC, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('YYYY-MM-DD HH:mm:ss');
+  vars.settlementTimeLocal = moment(vars.settlementTimeLocal, 'YYYY-MM-DDTHH:mm:ss.SSS').format('YYYY-MM-DD HH:mm:ss');
   vars.taxExempt = (vars.taxExempt === 'true') ? true : false;
   this.models.Transactions
   .create(vars)

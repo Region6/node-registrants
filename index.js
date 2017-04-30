@@ -1949,7 +1949,7 @@ Registrants.prototype.saveAuthorizeNetTransaction = function(data, callback) {
   }
   vars.submitTimeUTC = moment(vars.submitTimeUTC, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('YYYY-MM-DD HH:mm:ss');
   vars.submitTimeLocal = moment(vars.submitTimeLocal, 'YYYY-MM-DDTHH:mm:ss.SSS').format('YYYY-MM-DD HH:mm:ss');
-
+  vars.taxExempt = (vars.taxExempt === 'true') ? true : false;
   this.models.Transactions
   .create(vars)
   .then(function(trans) {

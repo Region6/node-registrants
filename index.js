@@ -356,7 +356,7 @@ Registrants.prototype.initialize = function(options) {
 
   this.models.CheckinMemberFieldValues = this.db.checkin.define('member_field_values', {
     id:                   { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-    local_id:             { type: Sequelize.INTEGER },
+    local_id:             { type: Sequelize.INTEGER, defaultValue: '0' },
     event_id:             { type: Sequelize.STRING(36) },
     field_id:             { type: Sequelize.INTEGER },
     member_id:            { type: Sequelize.STRING(255) },
@@ -377,7 +377,7 @@ Registrants.prototype.initialize = function(options) {
 
   this.models.CheckinEventFields = this.db.checkin.define('event_fields', {
     id:             { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-    local_id :       { type: Sequelize.INTEGER },
+    local_id :       { type: Sequelize.INTEGER, defaultValue: '0' },
     event_id :       { type: Sequelize.STRING(36) },
     field_id :       { type: Sequelize.INTEGER },
     local_event_id :       { type: Sequelize.INTEGER },
@@ -463,7 +463,7 @@ Registrants.prototype.initialize = function(options) {
 
   this.models.CheckinEventFees = this.db.checkin.define('event_fees', {
     id:                   { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-    local_id :            { type: Sequelize.INTEGER },
+    local_id :            { type: Sequelize.INTEGER, defaultValue: '0' },
     event_id :            { type: Sequelize.STRING(36) },
     user_id :             { type: Sequelize.STRING(255) },
     basefee :             { type: Sequelize.STRING(20) },
@@ -485,7 +485,7 @@ Registrants.prototype.initialize = function(options) {
 
   this.models.CheckinBillerFieldValues = this.db.checkin.define('biller_field_values', {
     id:                   { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-    local_id :            { type: Sequelize.INTEGER },
+    local_id :            { type: Sequelize.INTEGER, defaultValue: '0' },
     event_id :            { type: Sequelize.STRING(36) },
     field_id :            { type: Sequelize.INTEGER },
     user_id :             { type: Sequelize.STRING(255) },

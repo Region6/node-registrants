@@ -4,6 +4,7 @@ var fs = require('fs'),
     async = require('async'),
     uuid = require("node-uuid"),
     glob = require('glob'),
+    moment = require('moment'),
     underscore = require('underscore'),
     Sequelize = require("sequelize"),
     shortid = require('shortid32'),
@@ -1946,6 +1947,8 @@ Registrants.prototype.saveAuthorizeNetTransaction = function(data, callback) {
       shipToZip: data.transaction.shipTo.zip
     });
   }
+  vars.submitTimeUTC = moment(vars.submitTimeUTC, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('YYYY-MM-DD HH:mm:ss');
+  vars.submitTimeLocal = moment(vars.submitTimeLocal, 'YYYY-MM-DDTHH:mm:ss.SSS').format('YYYY-MM-DD HH:mm:ss');
 
   this.models.Transactions
   .create(vars)

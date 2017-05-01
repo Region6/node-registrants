@@ -620,6 +620,7 @@ Registrants.prototype.initialize = function(options) {
     confirmation :        { type: Sequelize.STRING(255) },
     transactionId :       { type: Sequelize.STRING(255) },
     checkNumber :         { type: Sequelize.STRING(255) },
+    checkAmount :         { type: Sequelize.STRING(20) },
     createdAt :           { type: Sequelize.DATE },
     updatedAt :           { type: Sequelize.DATE },
     deletedAt :           { type: Sequelize.DATE }
@@ -1033,7 +1034,7 @@ Registrants.prototype.getRegTransactions = function(attendee, callback) {
       trans,
       function(transaction, cb) {
         var _trans = transaction.toJSON();
-        if (transaction.transactionId) {
+        if (transaction.transactionId && !transaction.checkNumber) {
           self.models.Transactions.findOne({
             where: {
               transId: transaction.transactionId
@@ -1042,7 +1043,7 @@ Registrants.prototype.getRegTransactions = function(attendee, callback) {
             function(result) {
               if (result) {
                 _trans = underscore.extend(_trans, result.toJSON());
-                paid = (_trans.  responseCode === 1 || _trans.checkNumber) ? true : paid;
+                paid = (_trans.responseCode === 1) ? true : paid;
                 transactions.push(_trans);
               }
               cb();
@@ -1051,6 +1052,7 @@ Registrants.prototype.getRegTransactions = function(attendee, callback) {
             
         } else {
           transactions.push(_trans);
+          paid = (_trans.checkNumber) ? true : paid;
           cb();
         }
       },
@@ -1830,51 +1832,23 @@ Registrants.prototype.saveCheckTransaction = function(values, callback) {
         }
       })
       .then(function(biller) {
-        var attr = {
-              check: values.transaction.checkNumber
-            };
-        biller.updateAttributes(attr).then(function(biller) {
-          cb(null, {biller: biller});
-        });
-      });
-    },
-    function(results, cb) {
-      var billerId = values.registrant.id;
-      obj.models.CheckinEventFees
-      .find({
-        where: {
-          event_id: values.registrant.event_id,
-          user_id: billerId
-        }
-      })
-      .then(function(fees) {
-        results.fees = fees;
-        results.billerId = billerId;
-        cb(null, results);
+        cb(null, {biller: biller});
       });
     },
     function(results, cb) {
       var vals = {
-            basefee: transAction.amount,
-            fee: transAction.amount,
-            paid_amount: transAction.amount,
-            status: 1,
-            payment_method: "2"
-          };
-      if (results.fees) {
-        results.fees.updateAttributes(vals).then(function(fees) {
-          results.fees = fees;
-          cb(null, fees);
-        });
-      } else {
-        vals = underscore.extend(vals, {event_id: values.registrant.event_id, user_id: results.billerId});
-        obj.models.CheckinEventFees
-        .create(vals)
-        .then(function(fees) {
-          results.fees = fees;
-          cb(null, fees);
-        });
-      }
+        confirmation: biller.confirmation,
+        transactionId: moment().format('YYYYDDDDHHMMSS'),
+        checkNumber: transAction.checkNumber,
+        checkAmount: transAction.amount,
+      };
+      
+      //vals = underscore.extend(vals);
+      obj.models.RegistrantTransactions
+      .create(vals)
+      .then(function(transaction) {
+        cb(null, transaction);
+      });
     }
   ], function (err, results) {
     callback(results);

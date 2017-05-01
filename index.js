@@ -1837,7 +1837,7 @@ Registrants.prototype.saveCheckTransaction = function(values, callback) {
     },
     function(results, cb) {
       var vals = {
-        confirmation: biller.confirmation,
+        confirmation: results.biller.confirmation,
         transactionId: moment().format('YYYYDDDDHHMMSS'),
         checkNumber: transAction.checkNumber,
         checkAmount: transAction.amount,

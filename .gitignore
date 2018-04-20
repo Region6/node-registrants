@@ -6,3 +6,4 @@ config/config.json
 config/settings.json
 public/
 .vscode/
+package-lock.json

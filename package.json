@@ -1,16 +1,19 @@
 {
   "name": "node-registrants",
-  "version": "0.7.7",
+  "version": "0.8.0",
   "dependencies": {
-    "async": "0.9.0",
-    "generate-pincode": "^4.0.0",
-    "glob": "5.0.5",
-    "moment": "^2.18.1",
-    "mysql": "2.6.2",
-    "node-uuid": "1.4.3",
-    "sequelize": "2.1.0",
+    "async": "2.6.0",
+    "awaity": "^1.0.0",
+    "generate-pincode": "^5.0.1",
+    "glob": "7.1.2",
+    "knex": "^0.14.6",
+    "lodash": "^4.17.5",
+    "moment": "^2.22.0",
+    "mysql2": "^1.5.3",
+    "sequelize": "^4.37.6",
     "shortid32": "^0.1.1",
-    "underscore": "1.8.3"
+    "underscore": "1.8.3",
+    "uuid": "^3.2.1"
   },
   "devDependencies": {},
   "main": "index.js"

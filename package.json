@@ -10,7 +10,6 @@
     "lodash": "^4.17.5",
     "moment": "^2.22.0",
     "mysql2": "^1.5.3",
-    "sequelize": "^4.37.6",
     "shortid32": "^0.1.1",
     "underscore": "1.8.3",
     "uuid": "^3.2.1"

@@ -5,7 +5,6 @@ const async = require('async');
 const glob = require('glob');
 const moment = require('moment');
 const underscore = require('lodash');
-const Sequelize = require("sequelize");
 const shortid = require('shortid32');
 const gpc = require('generate-pincode');
 const knex = require('knex');
@@ -490,15 +489,28 @@ Registrants.prototype.getExhibitorAttendees = async function(attendee) {
 
 Registrants.prototype.getAdditionalAttendees = async function(attendee, callback) {
   const self = this;
-  let attendees = await this.knex.from('onsiteAttendees')
+  let attendees;
+  
+  if (attendee.exhibitor) {
+    attendees = await this.knex.from('onsiteAttendees')
     .where({
-      groupConfirm: attendee.groupConfirm,
-    })
-    .whereNot({
       confirmation: attendee.confirmation,
     })
-    .whereNotNull('groupConfirm')
+    .whereNot({
+      id: attendee.id,
+    })
     .catch(e => console.log('db', 'database error', e));
+  } else {
+    attendees = await this.knex.from('onsiteAttendees')
+      .where({
+        groupConfirm: attendee.groupConfirm,
+      })
+      .whereNot({
+        id: attendee.id,
+      })
+      .whereNotNull('groupConfirm')
+      .catch(e => console.log('db', 'database error', e));
+  } 
 
 
   const convertToJson = async function(item) {
@@ -523,26 +535,16 @@ Registrants.prototype.getAdditionalAttendees = async function(attendee, callback
 };
 
 Registrants.prototype.updateAttendee = async function(registrantId, values) {
+  const self = this;
   const regType = registrantId.slice(0,1);
   const regId = parseInt(registrantId.slice(1), 10);
-  let attendee;
-  if (regType == "E") {
-    attendee = await this.knex('exhibitorAttendees')
-      .where({ id: regId })
-      .update(values.fields)
-      .then(
-        data => db('exhibitorAttendees').where({ id: regId }),
-      )
-      .catch(e => console.log('db', 'database error', e));
-  } else {
-    attendee = await this.knex('onsiteAttendees')
-      .where({ id: regId })
-      .update(values.fields)
-      .then(
-        data => db('onsiteAttendees').where({ id: regId }),
-      )
-      .catch(e => console.log('db', 'database error', e));
-  }
+  let attendee = await this.knex('onsiteAttendees')
+    .where({ id: regId })
+    .update(values.fields)
+    .then(
+      data => self.knex('onsiteAttendees').where({ id: regId }),
+    )
+    .catch(e => console.log('db', 'database error', e));
   const results = await this.getAttendee(registrantId);
   return results;
 };

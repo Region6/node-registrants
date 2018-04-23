@@ -244,7 +244,6 @@ Registrants.prototype.initialize = function (options) {
       database : this.options.database,
       port: this.options.port || 3306,
     },
-    debug: ['ComQueryPacket'],
   });
 };
 

@@ -633,13 +633,17 @@ Registrants.prototype.searchAttendees2 = async function(filters, page, limit) {
 
 Registrants.prototype.getCheckedInCount = async function() {
   const self = this;
-  const onsiteAttendees = await this.knex.select()
-    .from('onsiteAttendees')
+  const total = await this.knex('onsiteAttendees')
+    .count('id as total')
+    .catch(e => console.log('db', 'database error', e));
+  const checkedIn = await this.knex('onsiteAttendees')
+    .count('id as total')
     .where({ attend: 1  })
     .catch(e => console.log('db', 'database error', e));
 
   return {
-    count: onsiteAttendees.length,
+    totalRegistrants: total[0].total,
+    checkedIn: checkedIn[0].total,
   };
 };
 

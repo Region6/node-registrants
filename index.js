@@ -570,13 +570,14 @@ Registrants.prototype.getRange = function(beginId, endId, type, callback) {
   });
 };
 
-Registrants.prototype.searchAttendees2 = async function(filters, page, limit) {    
+Registrants.prototype.searchAttendees2 = async function(filters, page, limit, sorting, exhibitors) {    
   let sql = "";
   let self = this;
   page = page || 0;
   limit = limit || 100;
   let start = page * limit;
   let vars = [];
+  sorting = (sorting && sorting.length) ? sorting : [{columnName: 'createdAt', direction: 'desc'}]; 
   const records = await this.knex.select(
     'onsiteAttendees.id',
     'onsiteAttendees.exhibitor',
@@ -585,13 +586,14 @@ Registrants.prototype.searchAttendees2 = async function(filters, page, limit) {
   )
   .from('onsiteAttendees')
   .where((builder) => {
+    let count = 0;
     filters
       .filter(r => r.columnName !== 'confirmation')
       .forEach((search, index) => {
         let field = search.columnName;
         let operator = '=';
         let value = search.value;
-
+        
         if (search.columnName === "company") {
           field = "organization";
           operator = 'LIKE';
@@ -612,9 +614,23 @@ Registrants.prototype.searchAttendees2 = async function(filters, page, limit) {
         } else {
           builder.andWhere(field, operator, value);
         }
+        count++;
     });
+
+    if (exhibitors && count === 0) {
+      builder.where('exhibitor', '=', 1);
+    } else if (exhibitors) {
+      builder.andWhere('exhibitor', '=', 1);
+    }
   })
-  .orderBy('createdAt', 'DESC')
+  .modify((queryBuilder) => {
+    if (sorting && sorting.length) {
+      sorting
+        .forEach((sort) => {
+          queryBuilder.orderBy(sort.columnName, sort.direction);
+        });
+    }
+  })
   .limit(limit)
   .offset(start)
   .catch(e => console.log('db', 'database error', e));
@@ -675,6 +691,7 @@ Registrants.prototype.initRegistrant = async function(values) {
   record.updatedAt = date;
   record.pin = gpc(4);
   record.confirmation = shortid.generate();
+  record.groupConfirm = (record.groupConfirm) ? record.groupConfirm : shortid.generate();
   record.eventId = values.event.eventId;
   registrant = await this.knex('onsiteAttendees')
     .insert(record)
@@ -686,21 +703,6 @@ Registrants.prototype.initRegistrant = async function(values) {
 
   if (registrant.length) {
     registrant = registrant[0];
-    const vals = {
-      basefee: 0,
-      fee: 0,
-      paid_amount: 0,
-      status: 0,
-      eventId: registrant.eventId,
-      userId: registrant.id
-    }; 
-  
-    const fees = await this.knex('eventFees')
-      .insert(vals)
-      .then(
-        data => self.knex('eventFees').where({ id: data[0] }),
-      )
-      .catch(e => console.log('db', 'database error', e));
   }
 
   const regId = `${type}${self.pad(registrant.id, 5)}`;

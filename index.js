@@ -346,7 +346,7 @@ Registrants.prototype.getRegTransactions = async function(attendee, callback) {
     async (transaction) => {
       let retVal;
       let _trans = transaction;
-      if (transaction.transactionId && !transaction.checkNumber) {
+      if (transaction.transactionId) {
         const result = await this.knex.from('transactions')
           .where({
             transId: transaction.transactionId
@@ -716,12 +716,17 @@ Registrants.prototype.saveCheckTransaction = async function(values) {
     .from('onsiteAttendees')
     .where({ id: values.registrant.id  })
     .catch(e => console.log('db', 'database error', e));
+  const now = moment().format('YYYY-MM-DD HH:mm:ss');
 
   const vals = {
     confirmation: biller[0].confirmation,
-    transactionId: moment().format('YYYYDDDDHHMMSS'),
-    checkNumber: transAction.checkNumber,
-    checkAmount: transAction.amount,
+    type: 'check',
+    journalNumber: shortid.generate(),
+    transactionId: moment().format('YYYYDDDDHHmmss'),
+    checkNumber: transAction.number,
+    amount: transAction.amount,
+    createdAt: now,
+    updatedAt: now,
   };
 
   const record = await this.knex('registrantTransactions')
@@ -731,7 +736,39 @@ Registrants.prototype.saveCheckTransaction = async function(values) {
     )
     .catch(e => console.log('db', 'database error', e));
 
-  return record;
+    const trans = {
+      transId: vals.transactionId,
+      submitTimeUTC: now,
+      submitTimeLocal: now,
+      transactionType: 'check',
+      transactionStatus: 'settledSuccessfully',
+      responseCode: null,
+      responseReasonCode: null,
+      responseReasonDescription: null,
+      authCode: gpc(4),
+      AVSResponse: null,
+      cardCodeResponse: null,
+      batchId: null,
+      settlementTimeUTC: now,
+      settlementTimeLocal: now,
+      invoiceNumber: values.registrant.confirmation,
+      description: values.registrant.registrantId,
+      customerId: values.registrant.confirmation,
+      authAmount: transAction.amount,
+      settleAmount: transAction.amount,
+      cardNumber: transAction.number,
+      cardType: null,
+      email: biller[0].email,
+    };
+  
+  const result = await this.knex('transactions')
+    .insert(trans)
+    .then(
+      data => self.knex('registrantTransactions').where({ id: data[0] }),
+    )
+    .catch(e => console.log('db', 'database error', e));
+
+  return result;
 };
 
 Registrants.prototype.saveCreditTransaction = async function(values) {

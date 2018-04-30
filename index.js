@@ -588,7 +588,6 @@ Registrants.prototype.searchAttendees2 = async function(filters, page, limit, so
   .where((builder) => {
     let count = 0;
     filters
-      .filter(r => r.columnName !== 'confirmation')
       .forEach((search, index) => {
         let field = search.columnName;
         let operator = '=';

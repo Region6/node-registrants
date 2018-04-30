@@ -689,8 +689,8 @@ Registrants.prototype.initRegistrant = async function(values) {
   record.createdAt = date;
   record.updatedAt = date;
   record.pin = gpc(4);
-  record.confirmation = shortid.generate();
-  record.groupConfirm = (record.groupConfirm) ? record.groupConfirm : shortid.generate();
+  record.confirmation = (record.confirmation.length) ? record.confirmation : shortid.generate();
+  record.groupConfirm = (record.groupConfirm.length) ? record.groupConfirm : shortid.generate();
   record.eventId = values.event.eventId;
   registrant = await this.knex('onsiteAttendees')
     .insert(record)

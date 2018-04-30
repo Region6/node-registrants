@@ -416,7 +416,7 @@ Registrants.prototype.getCreditTrans = async function(attendee) {
 Registrants.prototype.getBiller = async function(attendee) {
   const self = this;
   let biller;
-  if (attendee.transactions.length && attendee.transactions[0]) {
+  if (attendee.transactions && attendee.transactions.length && attendee.transactions[0]) {
     biller = await this.knex.select()
     .from('onsiteAttendees')
     .where({ confirmation: attendee.transactions[0].customerId })
@@ -689,8 +689,8 @@ Registrants.prototype.initRegistrant = async function(values) {
   record.createdAt = date;
   record.updatedAt = date;
   record.pin = gpc(4);
-  record.confirmation = (record.confirmation.length) ? record.confirmation : shortid.generate();
-  record.groupConfirm = (record.groupConfirm.length) ? record.groupConfirm : shortid.generate();
+  record.confirmation = (record.confirmation && record.confirmation.length) ? record.confirmation : shortid.generate();
+  record.groupConfirm = (record.groupConfirm && record.groupConfirm.length) ? record.groupConfirm : shortid.generate();
   record.eventId = values.event.eventId;
   registrant = await this.knex('onsiteAttendees')
     .insert(record)
@@ -700,7 +700,7 @@ Registrants.prototype.initRegistrant = async function(values) {
     .catch(e => console.log('db', 'database error', e));
   
 
-  if (registrant.length) {
+  if (registrant && registrant.length) {
     registrant = registrant[0];
   }
 
@@ -884,7 +884,7 @@ Registrants.prototype.getBadgeTemplate = async function(eventId) {
     })
     .catch(e => console.log('db', 'database error', e));
 
-  return (record.length) ? record[0].template : null;
+  return (record && record.length) ? record[0].template : null;
 }
 
 Registrants.prototype.pad = function(num, size) {

@@ -236,7 +236,7 @@ Registrants.prototype.initialize = function (options) {
   //console.log(this.options);
 
   this.knex = knex({
-    client: 'mysql2',
+    client: 'mysql',
     connection: {
       host : this.options.host || "localhost",
       user : this.options.username,

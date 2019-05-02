@@ -862,6 +862,7 @@ Registrants.prototype.getExhibitorCompanies = async function(company) {
   const record = await this.knex.select()
     .from('exhibitors')
     .where('exhibitors.organization', 'LIKE', `%${company}%`)
+    .orderBy('organization', 'ASC')
     .catch(e => console.log('db', 'database error', e));
 
   return record;
@@ -872,6 +873,13 @@ Registrants.prototype.getSiteInfo = async function(siteId) {
     .from('siteIds')
     .where({ siteId: siteId  })
     .catch(e => console.log('db', 'database error', e));
+  const voting = await this.knex.select()
+    .from('votingSiteIds')
+    .where({ siteId: siteId  })
+    .catch(e => console.log('db', 'database error', e));
+  if (site.length) {
+    site[0].voting = voting;
+  }
 
   return site;
 };
